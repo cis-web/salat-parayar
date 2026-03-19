@@ -1,9 +1,8 @@
-/* ==================== درود — وەشانی تەواو ==================== */
+/* ==================== درود — وەشانی تەواو (چاککراوە) ==================== */
 'use strict';
 
 // ==================== داتا ====================
 
-// کاتی نوێژەکان
 const PRAYER_TIMES = [
     { id: 'fajr', name: 'بەیانی', arabic: 'الفجر', time: '04:58', icon: '🌙', duration: 30 },
     { id: 'sunrise', name: 'ڕۆژهەڵاتن', arabic: 'الشروق', time: '06:20', icon: '🌅', duration: 0 },
@@ -13,7 +12,6 @@ const PRAYER_TIMES = [
     { id: 'isha', name: 'عیشا', arabic: 'العشاء', time: '19:40', icon: '🌙', duration: 30 }
 ];
 
-// دەنگەکانی بانگ
 const SOUNDS = [
     { id: 'makkah', name: 'بانگی مەککە', desc: 'شێخ عەبدولرەحمان سودەیس', emoji: '🕋', url: 'https://www.islamcan.com/audio/adhan/azan1.mp3' },
     { id: 'madinah', name: 'بانگی مەدینە', desc: 'شێخ عەلی جابر', emoji: '🕌', url: 'https://www.islamcan.com/audio/adhan/azan2.mp3' },
@@ -22,7 +20,6 @@ const SOUNDS = [
     { id: 'silent', name: 'بێدەنگ', desc: 'تەنها لەرزاندن', emoji: '🔇', url: null }
 ];
 
-// زیکرەکان
 const ADHKAR = {
     morning: [
         { arabic: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ', translation: 'بەیانمان بوو و مافی پادشایەتی بۆ خوایە', count: 1 },
@@ -43,7 +40,6 @@ const ADHKAR = {
     ]
 };
 
-// فەرمودەکان
 const DUAS = {
     daily: [
         { arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', translation: 'پەروەردگارمان لە دنیا و ئاخیرەت چاکەمان بدە', source: 'بەقەرە ٢٠١' },
@@ -59,7 +55,6 @@ const DUAS = {
     travel: []
 };
 
-// شارەکان
 const CITIES = [
     { id: 'sulaymaniyah', name: 'سلێمانی', country: 'عێراق', flag: '🇮🇶' },
     { id: 'erbil', name: 'هەولێر', country: 'عێراق', flag: '🇮🇶' },
@@ -71,7 +66,6 @@ const CITIES = [
     { id: 'istanbul', name: 'ئەستەمبوڵ', country: 'تورکیا', flag: '🇹🇷' }
 ];
 
-// زمانەکان
 const LANGUAGES = [
     { id: 'ckb', name: 'کوردی', native: 'Kurdî', flag: '🏔️' },
     { id: 'ar', name: 'عربي', native: 'العربية', flag: '🌙' },
@@ -95,16 +89,18 @@ let testTimer = null;
 let testCurrentIndex = 0;
 let testLog = [];
 
+const adhkarCounters = {};
+
 // ==================== فەنکشنی کات ====================
 
 function updateClock() {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('clock-status').textContent = `${hours}:${minutes}`;
+    const clockEl = document.getElementById('clock-status');
+    if (clockEl) clockEl.textContent = `${hours}:${minutes}`;
 }
 setInterval(updateClock, 1000);
-updateClock();
 
 function getCurrentTimeInMinutes() {
     const now = new Date();
@@ -116,16 +112,6 @@ function timeToMinutes(timeStr) {
     return hours * 60 + minutes;
 }
 
-function formatTimeForDisplay(hours, minutes) {
-    if (is24Hour) {
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    } else {
-        const period = hours >= 12 ? 'د.ن' : 'ب.ن';
-        const hour12 = hours % 12 || 12;
-        return `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
-    }
-}
-
 function findNextPrayer() {
     const now = getCurrentTimeInMinutes();
     
@@ -135,7 +121,7 @@ function findNextPrayer() {
             return prayer;
         }
     }
-    return PRAYER_TIMES[0]; // بەیانی سبەی
+    return PRAYER_TIMES[0];
 }
 
 function getTimeRemaining(prayer) {
@@ -162,22 +148,27 @@ function updatePrayerDisplay() {
     const nextPrayer = findNextPrayer();
     const remaining = getTimeRemaining(nextPrayer);
     
-    document.getElementById('next-prayer-name').textContent = nextPrayer.name;
-    document.getElementById('next-prayer-time').textContent = nextPrayer.time;
-    document.getElementById('countdown').textContent = `${remaining.hours}:${remaining.minutes}:${remaining.seconds}`;
-    document.getElementById('progress-fill').style.width = `${remaining.percent}%`;
+    const nextNameEl = document.getElementById('next-prayer-name');
+    const nextTimeEl = document.getElementById('next-prayer-time');
+    const countdownEl = document.getElementById('countdown');
+    const progressEl = document.getElementById('progress-fill');
+    const completedEl = document.getElementById('completed-prayers');
+    const remainingEl = document.getElementById('remaining-prayers');
+    const nextInEl = document.getElementById('next-prayer-in');
     
-    // ئامارەکان
+    if (nextNameEl) nextNameEl.textContent = nextPrayer.name;
+    if (nextTimeEl) nextTimeEl.textContent = nextPrayer.time;
+    if (countdownEl) countdownEl.textContent = `${remaining.hours}:${remaining.minutes}:${remaining.seconds}`;
+    if (progressEl) progressEl.style.width = `${remaining.percent}%`;
+    
     const completed = PRAYER_TIMES.filter(p => timeToMinutes(p.time) < getCurrentTimeInMinutes()).length;
-    document.getElementById('completed-prayers').textContent = completed;
-    document.getElementById('remaining-prayers').textContent = PRAYER_TIMES.length - completed;
-    document.getElementById('next-prayer-in').textContent = `${remaining.hours}خ`;
+    if (completedEl) completedEl.textContent = completed;
+    if (remainingEl) remainingEl.textContent = PRAYER_TIMES.length - completed;
+    if (nextInEl) nextInEl.textContent = `${remaining.hours}خ`;
     
-    // نوێژەکان پیشان بدە
     renderPrayersList();
 }
 setInterval(updatePrayerDisplay, 1000);
-updatePrayerDisplay();
 
 function renderPrayersList() {
     const container = document.getElementById('prayers-list');
@@ -226,33 +217,28 @@ function updateDate() {
     const day = now.getDate().toString().padStart(2, '0');
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const year = now.getFullYear();
-    document.getElementById('gregorian-date').textContent = `${day}/${month}/${year}`;
     
-    // هیجری (نزیکەیی)
-    const hijriDate = getHijriDate(now);
-    document.getElementById('hijri-date').textContent = hijriDate;
-}
-updateDate();
-
-function getHijriDate(date) {
-    // ئەمە تەنها بۆ نمونەیە — بۆ وەشانی ڕاستەقینە دەبێت API بەکاربهێنیت
-    return '١٨ ڕەمەزان ١٤٤٧';
+    const gregorianEl = document.getElementById('gregorian-date');
+    const hijriEl = document.getElementById('hijri-date');
+    
+    if (gregorianEl) gregorianEl.textContent = `${day}/${month}/${year}`;
+    if (hijriEl) hijriEl.textContent = '١٨ ڕەمەزان ١٤٤٧';
 }
 
 // ==================== گۆڕینی شاشەکان ====================
 
 function switchScreen(screenId, btn) {
-    // داخستنی هەموو شاشەکان
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(`screen-${screenId}`).classList.add('active');
+    event?.preventDefault();
     
-    // نوێکردنەوەی دوگمەکانی navigation
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const targetScreen = document.getElementById(`screen-${screenId}`);
+    if (targetScreen) targetScreen.classList.add('active');
+    
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     
     currentScreen = screenId;
     
-    // بارکردنی داتا بەپێی شاشە
     if (screenId === 'adhkar') {
         renderAdhkar('morning');
     } else if (screenId === 'dua') {
@@ -262,17 +248,11 @@ function switchScreen(screenId, btn) {
 
 // ==================== زیکرەکان ====================
 
-let currentAdhkarTab = 'morning';
-const adhkarCounters = {};
-
-function switchAdhkarTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (btn.parentElement?.parentElement?.id === 'screen-adhkar') {
-            btn.classList.remove('active');
-        }
-    });
-    event.target.classList.add('active');
-    currentAdhkarTab = tab;
+function switchAdhkarTab(tab, btn) {
+    event?.preventDefault();
+    
+    document.querySelectorAll('#screen-adhkar .tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
     renderAdhkar(tab);
 }
 
@@ -307,29 +287,32 @@ function renderAdhkar(tab) {
 function incrementDhikr(key, max) {
     if (adhkarCounters[key] < max) {
         adhkarCounters[key]++;
-        document.getElementById(`counter-${key}`).textContent = adhkarCounters[key];
+        const counterEl = document.getElementById(`counter-${key}`);
+        if (counterEl) counterEl.textContent = adhkarCounters[key];
         
         if (adhkarCounters[key] >= max) {
-            document.getElementById(`dhikr-${key}`).classList.add('completed');
+            const cardEl = document.getElementById(`dhikr-${key}`);
+            if (cardEl) cardEl.classList.add('completed');
         }
     }
 }
 
 function resetDhikr(key) {
     adhkarCounters[key] = 0;
-    document.getElementById(`counter-${key}`).textContent = '0';
-    document.getElementById(`dhikr-${key}`).classList.remove('completed');
+    const counterEl = document.getElementById(`counter-${key}`);
+    if (counterEl) counterEl.textContent = '0';
+    
+    const cardEl = document.getElementById(`dhikr-${key}`);
+    if (cardEl) cardEl.classList.remove('completed');
 }
 
 // ==================== فەرمودەکان ====================
 
-function switchDuaTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (btn.parentElement?.parentElement?.id === 'screen-dua') {
-            btn.classList.remove('active');
-        }
-    });
-    event.target.classList.add('active');
+function switchDuaTab(tab, btn) {
+    event?.preventDefault();
+    
+    document.querySelectorAll('#screen-dua .tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
     renderDua(tab);
 }
 
@@ -391,10 +374,11 @@ function playTestSound(id) {
     currentAudio.volume = 0.5;
     currentAudio.play().catch(e => console.log('دەنگ نایەت:', e));
     
-    // پێشاندانی ئەنیمەیشن
     const btn = document.querySelector(`#sound-${id} .sound-play-btn`);
-    btn.classList.add('playing');
-    setTimeout(() => btn.classList.remove('playing'), 2000);
+    if (btn) {
+        btn.classList.add('playing');
+        setTimeout(() => btn.classList.remove('playing'), 2000);
+    }
 }
 
 function selectSound(id) {
@@ -406,7 +390,11 @@ function selectSound(id) {
     const current = document.getElementById(`sound-${id}`);
     if (current) current.classList.add('selected');
     
-    document.getElementById('selected-sound').textContent = SOUNDS.find(s => s.id === id)?.name || id;
+    const selectedSoundEl = document.getElementById('selected-sound');
+    if (selectedSoundEl) {
+        selectedSoundEl.textContent = SOUNDS.find(s => s.id === id)?.name || id;
+    }
+    
     localStorage.setItem('droood_sound', id);
     
     if (currentAudio) {
@@ -448,8 +436,11 @@ function selectCity(id) {
     selectedCity = id;
     const city = CITIES.find(c => c.id === id);
     
-    document.getElementById('selected-city').textContent = `${city.name}، ${city.country}`;
-    document.getElementById('location-name').textContent = `${city.name}، ${city.country}`;
+    const selectedCityEl = document.getElementById('selected-city');
+    const locationNameEl = document.getElementById('location-name');
+    
+    if (selectedCityEl) selectedCityEl.textContent = `${city.name}، ${city.country}`;
+    if (locationNameEl) locationNameEl.textContent = `${city.name}، ${city.country}`;
     
     renderCities(CITIES);
     closeModal('modal-location');
@@ -480,7 +471,8 @@ function selectLanguage(id) {
     selectedLang = id;
     const lang = LANGUAGES.find(l => l.id === id);
     
-    document.getElementById('selected-language').textContent = lang.name;
+    const selectedLangEl = document.getElementById('selected-language');
+    if (selectedLangEl) selectedLangEl.textContent = lang.name;
     
     renderLanguages();
     closeModal('modal-language');
@@ -496,11 +488,13 @@ function openAboutModal() {
 // ==================== مۆدالەکان ====================
 
 function openModal(id) {
-    document.getElementById(id).classList.add('open');
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add('open');
 }
 
 function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('open');
     
     if (id === 'modal-sound' && currentAudio) {
         currentAudio.pause();
@@ -510,7 +504,8 @@ function closeModal(id) {
 // ==================== ڕێکخستنەکان ====================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // بارکردنی پاشەکەوتکراوەکان
+    console.log('🚀 ئەپەکە بار دەبێت...');
+    
     try {
         const savedSound = localStorage.getItem('droood_sound');
         if (savedSound) selectedSoundId = savedSound;
@@ -520,8 +515,10 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedCity = savedCity;
             const city = CITIES.find(c => c.id === savedCity);
             if (city) {
-                document.getElementById('selected-city').textContent = `${city.name}، ${city.country}`;
-                document.getElementById('location-name').textContent = `${city.name}، ${city.country}`;
+                const selectedCityEl = document.getElementById('selected-city');
+                const locationNameEl = document.getElementById('location-name');
+                if (selectedCityEl) selectedCityEl.textContent = `${city.name}، ${city.country}`;
+                if (locationNameEl) locationNameEl.textContent = `${city.name}، ${city.country}`;
             }
         }
         
@@ -529,30 +526,59 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedLang) {
             selectedLang = savedLang;
             const lang = LANGUAGES.find(l => l.id === savedLang);
-            if (lang) document.getElementById('selected-language').textContent = lang.name;
+            if (lang) {
+                const selectedLangEl = document.getElementById('selected-language');
+                if (selectedLangEl) selectedLangEl.textContent = lang.name;
+            }
         }
-    } catch(e) {}
+    } catch(e) {
+        console.log('هەڵە لە بارکردنی پاشەکەوتکراوەکان:', e);
+    }
     
-    document.getElementById('selected-sound').textContent = SOUNDS.find(s => s.id === selectedSoundId)?.name || 'بانگی مەککە';
+    const selectedSoundEl = document.getElementById('selected-sound');
+    if (selectedSoundEl) {
+        selectedSoundEl.textContent = SOUNDS.find(s => s.id === selectedSoundId)?.name || 'بانگی مەککە';
+    }
     
-    // تۆگڵەکان
-    document.getElementById('notifications-toggle').addEventListener('change', (e) => {
-        notificationsEnabled = e.target.checked;
-    });
+    const notifToggle = document.getElementById('notifications-toggle');
+    if (notifToggle) {
+        notifToggle.addEventListener('change', (e) => {
+            notificationsEnabled = e.target.checked;
+        });
+    }
     
-    document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
-        darkMode = e.target.checked;
-    });
+    const darkToggle = document.getElementById('dark-mode-toggle');
+    if (darkToggle) {
+        darkToggle.addEventListener('change', (e) => {
+            darkMode = e.target.checked;
+        });
+    }
     
-    document.getElementById('time-format-toggle').addEventListener('change', (e) => {
-        is24Hour = e.target.checked;
-        document.getElementById('time-format-label').textContent = is24Hour ? '٢٤ کاتژمێری' : '١٢ کاتژمێری';
-        updatePrayerDisplay();
-    });
+    const timeToggle = document.getElementById('time-format-toggle');
+    if (timeToggle) {
+        timeToggle.addEventListener('change', (e) => {
+            is24Hour = e.target.checked;
+            const timeFormatLabel = document.getElementById('time-format-label');
+            if (timeFormatLabel) {
+                timeFormatLabel.textContent = is24Hour ? '٢٤ کاتژمێری' : '١٢ کاتژمێری';
+            }
+            updatePrayerDisplay();
+        });
+    }
     
-    // زیکر و فەرمودە پیشان بدە
+    updateClock();
+    updateDate();
+    updatePrayerDisplay();
     renderAdhkar('morning');
     renderDua('daily');
+    
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.add('hidden');
+            setTimeout(() => splash.remove(), 500);
+        }
+    }, 1000);
 });
 
 // ==================== تایبەتی بانگ ====================
@@ -566,9 +592,14 @@ function resetTestPanel() {
     testCurrentIndex = 0;
     testLog = ['🟢 ئامادەیە...'];
     updateTestLog();
-    document.getElementById('test-progress-bar').style.width = '0%';
-    document.getElementById('test-start-btn').disabled = false;
-    document.getElementById('test-stop-btn').disabled = true;
+    
+    const progressBar = document.getElementById('test-progress-bar');
+    const startBtn = document.getElementById('test-start-btn');
+    const stopBtn = document.getElementById('test-stop-btn');
+    
+    if (progressBar) progressBar.style.width = '0%';
+    if (startBtn) startBtn.disabled = false;
+    if (stopBtn) stopBtn.disabled = true;
 }
 
 function addTestLog(message) {
@@ -591,8 +622,11 @@ function startAutoTest() {
     autoTestRunning = true;
     testCurrentIndex = 0;
     
-    document.getElementById('test-start-btn').disabled = true;
-    document.getElementById('test-stop-btn').disabled = false;
+    const startBtn = document.getElementById('test-start-btn');
+    const stopBtn = document.getElementById('test-stop-btn');
+    
+    if (startBtn) startBtn.disabled = true;
+    if (stopBtn) stopBtn.disabled = false;
     
     runNextTestPrayer();
 }
@@ -612,9 +646,13 @@ function stopAutoTest() {
         currentAudio.pause();
     }
     
-    document.getElementById('test-start-btn').disabled = false;
-    document.getElementById('test-stop-btn').disabled = true;
-    document.getElementById('test-progress-bar').style.width = '0%';
+    const startBtn = document.getElementById('test-start-btn');
+    const stopBtn = document.getElementById('test-stop-btn');
+    const progressBar = document.getElementById('test-progress-bar');
+    
+    if (startBtn) startBtn.disabled = false;
+    if (stopBtn) stopBtn.disabled = true;
+    if (progressBar) progressBar.style.width = '0%';
 }
 
 function runNextTestPrayer() {
@@ -628,11 +666,12 @@ function runNextTestPrayer() {
     
     const prayer = PRAYER_TIMES[testCurrentIndex];
     const progress = ((testCurrentIndex) / PRAYER_TIMES.length) * 100;
-    document.getElementById('test-progress-bar').style.width = `${progress}%`;
+    
+    const progressBar = document.getElementById('test-progress-bar');
+    if (progressBar) progressBar.style.width = `${progress}%`;
     
     addTestLog(`🕋 ${prayer.name} — بانگ دەدرێت`);
     
-    // لێدانی دەنگ
     const sound = SOUNDS.find(s => s.id === selectedSoundId);
     if (sound && sound.url) {
         if (currentAudio) currentAudio.pause();
@@ -647,53 +686,32 @@ function runNextTestPrayer() {
     
     testCurrentIndex++;
     
-    testTimer = setTimeout(runNextTestPrayer, 30000); // ٣٠ چرکە
+    testTimer = setTimeout(runNextTestPrayer, 30000);
 }
 
-// پێشاندانی فەنکشنەکان بۆ جیهانی
-window.switchScreen = switchScreen;
-window.switchAdhkarTab = switchAdhkarTab;
-window.switchDuaTab = switchDuaTab;
-window.incrementDhikr = incrementDhikr;
-window.resetDhikr = resetDhikr;
-window.openSoundModal = openSoundModal;
-window.openLocationModal = openLocationModal;
-window.openLanguageModal = openLanguageModal;
-window.openAboutModal = openAboutModal;
-window.openTestPanel = openTestPanel;
-window.closeModal = closeModal;
-window.playTestSound = playTestSound;
-window.selectSound = selectSound;
-window.selectCity = selectCity;
-window.selectLanguage = selectLanguage;
-window.filterCities = filterCities;
-window.togglePrayerNotification = togglePrayerNotification;
-window.startAutoTest = startAutoTest;
-window.stopAutoTest = stopAutoTest;
 // ==================== PWA SUPPORT ====================
 
-// پشکنین ئایا وەک ئەپ کراوەتەوە
 function isRunningAsApp() {
     return window.matchMedia('(display-mode: standalone)').matches ||
            window.navigator.standalone === true;
 }
 
-// ڕێکخستنی status bar بۆ ئەپ
 function adjustForAppMode() {
     if (isRunningAsApp()) {
         document.body.classList.add('app-mode');
         console.log('📱 ئەپ وەک standalone کراوەتەوە');
+        
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) installBtn.style.display = 'none';
     }
 }
 
-// پێشنیاری نصبکردنی ئەپ بۆ ئەندرۆید/دێسکتۆپ
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     
-    // پیشاندانی دوگمەی نصب (ئەگەر ویستت)
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
         installBtn.style.display = 'flex';
@@ -713,7 +731,6 @@ function installApp() {
     });
 }
 
-// پشکنینی دۆخی ئۆفلاین/ئۆنلاین
 function updateOnlineStatus() {
     const statusEl = document.getElementById('connection-status');
     if (!statusEl) return;
@@ -731,5 +748,29 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// بانگەوە لە سەرەتادا
 adjustForAppMode();
+
+// ==================== ڕاگەیاندنی فەنکشنەکان بۆ جیهانی (ئەمە زۆر گرنگە) ====================
+
+window.switchScreen = switchScreen;
+window.switchAdhkarTab = switchAdhkarTab;
+window.switchDuaTab = switchDuaTab;
+window.incrementDhikr = incrementDhikr;
+window.resetDhikr = resetDhikr;
+window.openSoundModal = openSoundModal;
+window.openLocationModal = openLocationModal;
+window.openLanguageModal = openLanguageModal;
+window.openAboutModal = openAboutModal;
+window.openTestPanel = openTestPanel;
+window.closeModal = closeModal;
+window.playTestSound = playTestSound;
+window.selectSound = selectSound;
+window.selectCity = selectCity;
+window.selectLanguage = selectLanguage;
+window.filterCities = filterCities;
+window.togglePrayerNotification = togglePrayerNotification;
+window.startAutoTest = startAutoTest;
+window.stopAutoTest = stopAutoTest;
+window.installApp = installApp;
+
+console.log('✅ هەموو فەنکشنەکان ڕاگەیەندران!');
