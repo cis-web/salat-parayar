@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- 📱 Viewport بۆ مۆبایل (ئەمە زۆر گرنگە!) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- 🎨 PWA / Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- 🎨 PWA بۆ ئەندرۆید -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="application-name" content="درود">
+    <meta name="apple-mobile-web-app-title" content="درود">
+    
+    <!-- 🍎 PWA بۆ ئایفۆن/ئایپاد -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- 🖼️ ئایکۆنەکان بۆ مۆبایل (فایلی وێنەکان پێویستە) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    
+    <!-- 🍎 ئایکۆن بۆ ئایفۆن -->
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-192.png">
+    
+    <!-- 🎨 فۆنت -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    
+    <title>درود — نوێژ، زیکر، فەرمودە</title>
+    
+    <!-- تێکست بۆ SEO و کاتی ئۆفلاین -->
+    <meta name="description" content="ئەپێکی ئیسلامی بۆ کاتی نوێژ، زیکر و فەرمودە">
+    <meta name="keywords" content="درود, droood, نوێژ, prayer, زیکر, dhikr, فەرمودە, dua, کوردی, kurdish, ئیسلام, islam">
+    <meta name="author" content="ماجد أنور حمە ڕەحیم">
+    
+    <!-- CSSەکان -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/adhkar.css">
+    <link rel="stylesheet" href="css/dua.css">
+    <link rel="stylesheet" href="css/settings.css">
+    
+    <style>
+        /* ==================== STYLES ی سەرەتایی ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #c9a84c;
+            --primary-dark: #a67c2e;
+            --primary-light: #dfc078;
+            --bg-dark: #0a0a14;
+            --bg-card: #10101a;
+            --bg-header: linear-gradient(135deg, #0d0808, #1a0e06);
+            --text-primary: #eeeeff;
+            --text-secondary: #8888aa;
+            --text-muted: #44445a;
+            --border-gold: rgba(201,168,76,0.3);
+            --shadow: 0 4px 20px rgba(0,0,0,0.5);
+            --radius: 16px;
+            --font: 'Noto Naskh Arabic', 'Amiri', serif;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        /* ==================== PHONE SHELL ==================== */
+        .phone-shell {
+            width: 100%;
+            max-width: 400px;
+            height: 750px;
+            background: var(--bg-dark);
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 2px solid var(--border-gold);
+        }
+
+        /* ==================== SPLASH SCREEN ==================== */
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            background: #0a0a14;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(201,168,76,0.1);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            border: 2px solid var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ==================== STATUS BAR ==================== */
+        .status-bar {
+            background: #050508;
+            color: var(--primary-light);
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-gold);
+        }
+
+        /* ڕێکخستن بۆ ئەو کاتی standalone */
+        @media (display-mode: standalone) {
+            .status-bar {
+                padding-top: max(12px, env(safe-area-inset-top));
+            }
+            
+            .phone-shell {
+                border-radius: 0;
+                border: none;
+                height: 100vh;
+                max-width: 100%;
+            }
+        }
+
+        /* ==================== SCREENS ==================== */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== SCROLL AREAS ==================== */
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ==================== HEADERS ==================== */
+        .screen-header {
+            background: var(--bg-header);
+            padding: 20px;
+            border-bottom: 1.5px solid var(--border-gold);
+            flex-shrink: 0;
+        }
+
+        .screen-header h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-light);
+            margin-bottom: 4px;
+        }
+
+        .screen-header p {
+            font-size: 13px;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+
+        /* ==================== BOTTOM NAVIGATION ==================== */
+        .bottom-nav {
+            background: #050508;
+            border-top: 1.5px solid var(--border-gold);
+            display: flex;
+            padding: 6px 0 12px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 0 4px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+
+        .nav-btn.active {
+            color: var(--primary-light);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .nav-btn.active .nav-icon {
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        /* ==================== INSTALL BANNER ==================== */
+        .install-banner {
+            background: linear-gradient(135deg, #1a4d6e, #0a2f44);
+            border: 1.5px solid var(--primary);
+            border-radius: 50px;
+            padding: 12px 20px;
+            margin: 10px 0;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            color: var(--primary-light);
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        /* ==================== CONNECTION STATUS ==================== */
+        #connection-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== SPLASH SCREEN ==================== -->
+<div class="splash-screen" id="splash-screen">
+    <div class="splash-logo">🕌</div>
+</div>
+
+<div class="phone-shell">
+    
+    <!-- ==================== STATUS BAR ==================== -->
+    <div class="status-bar">
+        <span id="clock-status">12:00</span>
+        <span>درود | Droood</span>
+        <span id="connection-status">🔵 ئۆنلاین</span>
+    </div>
+
+    <!-- ==================== HOME SCREEN (نوێژەکان) ==================== -->
+    <div class="screen active" id="screen-home">
+        <div class="home-header">
+            <div class="location-badge" id="location-display">
+                <span class="location-icon">📍</span>
+                <span id="location-name">سلێمانی، عێراق</span>
+            </div>
+            
+            <div class="date-badge" id="date-display">
+                <span id="gregorian-date">١٩ ئازار ٢٠٢٦</span>
+                <span class="separator">•</span>
+                <span id="hijri-date">١٨ ڕەمەزان ١٤٤٧</span>
+            </div>
+
+            <!-- کارتی نوێژی داهاتوو -->
+            <div class="next-prayer-card">
+                <div class="next-prayer-label">نوێژی داهاتوو</div>
+                <div class="next-prayer-name" id="next-prayer-name">بەیانی</div>
+                <div class="next-prayer-time" id="next-prayer-time">٠٤:٥٨</div>
+                
+                <div class="countdown-container">
+                    <div class="countdown-label">کاتی ماوە</div>
+                    <div class="countdown" id="countdown">٠٥:٢١:١٤</div>
+                </div>
+                
+                <!-- پرۆگرێس بار -->
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 65%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-area">
+            <h3 class="section-title">🕐 کاتی نوێژەکان</h3>
+            
+            <!-- لیستی نوێژەکان -->
+            <div class="prayers-list" id="prayers-list"></div>
+            
+            <!-- ئامارەکان -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-prayers">٦</div>
+                    <div class="stat-label">نوێژی تەواو</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="remaining-prayers">٠</div>
+                    <div class="stat-label">نوێژی ماوە</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="next-prayer-in">٠٥خ</div>
+                    <div class="stat-label">تا نوێژ</div>
+                </div>
+            </div>
+            
+            <!-- دوگمەی نصب (لە سەرەتا شاوە) -->
+            <div id="install-btn" class="install-banner" onclick="installApp()">
+                <span>📲</span>
+                <span>ئەپەکە نصب بکە</span>
+                <span>›</span>
+            </div>
+            
+            <!-- دوگمەی تایبەت بۆ تایبەت -->
+            <div class="test-banner" onclick="openTestPanel()">
+                <span>🔊</span>
+                <span>دەنگی بانگ تایبەت بکە</span>
+                <span>›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ADHKAR SCREEN (زیکرەکان) ==================== -->
+    <div class="screen" id="screen-adhkar">
+        <div class="screen-header">
+            <h2>📿 زیکرەکان</h2>
+            <p>ئەوراد و تەسبیحات</p>
+        </div>
+        
+        <!-- تابەکان -->
+        <div class="adhkar-tabs">
+            <button class="tab-btn active" onclick="switchAdhkarTab('morning', this)">🌅 بەیانی</button>
+            <button class="tab-btn" onclick="switchAdhkarTab('evening', this)">🌆 ئێواران</button>
+            <button class="tab-btn" onclick="switchAdhkarTab('night', this)">🌙 خەوتن</button>
+            <button class="tab-btn" onclick="switchAdhkarTab('prayer', this)">🕌 دوای نوێژ</button>
+        </div>
+        
+        <div class="scroll-area" id="adhkar-container">
+            <!-- زیکرەکان لە JavaScriptـەوە دادەنرێت -->
+        </div>
+    </div>
+
+    <!-- ==================== DUA SCREEN (فەرمودەکان) ==================== -->
+    <div class="screen" id="screen-dua">
+        <div class="screen-header">
+            <h2>🤲 فەرمودەکان</h2>
+            <p>دوعا و پاڕانەوە</p>
+        </div>
+        
+        <!-- تابەکان -->
+        <div class="dua-tabs">
+            <button class="tab-btn active" onclick="switchDuaTab('daily', this)">📅 ڕۆژانە</button>
+            <button class="tab-btn" onclick="switchDuaTab('morning', this)">🌅 بەیانی</button>
+            <button class="tab-btn" onclick="switchDuaTab('evening', this)">🌆 ئێواران</button>
+            <button class="tab-btn" onclick="switchDuaTab('sleep', this)">😴 خەوتن</button>
+            <button class="tab-btn" onclick="switchDuaTab('waking', this)">☀️ هەڵسان</button>
+            <button class="tab-btn" onclick="switchDuaTab('food', this)">🍽 خواردن</button>
+            <button class="tab-btn" onclick="switchDuaTab('travel', this)">✈️ گەشت</button>
+        </div>
+        
+        <div class="scroll-area" id="dua-container">
+            <!-- فەرمودەکان لە JavaScriptـەوە دادەنرێت -->
+        </div>
+    </div>
+
+    <!-- ==================== SETTINGS SCREEN (ڕێکخستنەکان) ==================== -->
+    <div class="screen" id="screen-settings">
+        <div class="screen-header">
+            <h2>⚙️ ڕێکخستنەکان</h2>
+            <p>تایبەتمەندی و ڕێکخستن</p>
+        </div>
+        
+        <div class="scroll-area">
+            <!-- دەنگی بانگ -->
+            <div class="settings-group">
+                <h4 class="settings-group-title">🔊 دەنگەکان</h4>
+                
+                <div class="settings-item" onclick="openSoundModal()">
+                    <div class="settings-item-icon">🎵</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">دەنگی بانگ</div>
+                        <div class="settings-item-subtitle" id="selected-sound">بانگی مەککە</div>
+                    </div>
+                    <div class="settings-item-arrow">›</div>
+                </div>
+                
+                <div class="settings-item">
+                    <div class="settings-item-icon">🔔</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">ئاگادارکردنەوە</div>
+                        <div class="settings-item-subtitle">١٥ خولەک پێش نوێژ</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="notifications-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- شوێن -->
+            <div class="settings-group">
+                <h4 class="settings-group-title">📍 شوێن</h4>
+                
+                <div class="settings-item" onclick="openLocationModal()">
+                    <div class="settings-item-icon">🏙️</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">شاری خۆت هەڵبژێرە</div>
+                        <div class="settings-item-subtitle" id="selected-city">سلێمانی، عێراق</div>
+                    </div>
+                    <div class="settings-item-arrow">›</div>
+                </div>
+            </div>
+            
+            <!-- زمان -->
+            <div class="settings-group">
+                <h4 class="settings-group-title">🌐 زمان</h4>
+                
+                <div class="settings-item" onclick="openLanguageModal()">
+                    <div class="settings-item-icon">🗣️</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">زمانی ئەپ</div>
+                        <div class="settings-item-subtitle" id="selected-language">کوردی (سۆرانی)</div>
+                    </div>
+                    <div class="settings-item-arrow">›</div>
+                </div>
+            </div>
+            
+            <!-- ڕووکار -->
+            <div class="settings-group">
+                <h4 class="settings-group-title">🎨 ڕووکار</h4>
+                
+                <div class="settings-item">
+                    <div class="settings-item-icon">🌙</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">ڕووکاری تاریک</div>
+                        <div class="settings-item-subtitle">پێشنیار کراوە</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div class="settings-item-icon">🔤</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">شێوازی کات</div>
+                        <div class="settings-item-subtitle" id="time-format-label">٢٤ کاتژمێری</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="time-format-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- دەربارە -->
+            <div class="settings-group">
+                <h4 class="settings-group-title">ℹ️ دەربارە</h4>
+                
+                <div class="settings-item" onclick="openAboutModal()">
+                    <div class="settings-item-icon">🕋</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title">دەربارەی ئەپ</div>
+                        <div class="settings-item-subtitle">ڤێرژن ١.٠.٠</div>
+                    </div>
+                    <div class="settings-item-arrow">›</div>
+                </div>
+                
+                <!-- دوگمەی تایبەت -->
+                <div class="settings-item test-mode" onclick="openTestPanel()">
+                    <div class="settings-item-icon">🧪</div>
+                    <div class="settings-item-content">
+                        <div class="settings-item-title" style="color: #c9a84c;">تایبەتی بانگ</div>
+                        <div class="settings-item-subtitle">تێستکردنی دەنگەکان</div>
+                    </div>
+                    <div class="settings-item-arrow" style="color: #c9a84c;">›</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchScreen('home', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-label">نوێژ</span>
+        </button>
+        
+        <button class="nav-btn" onclick="switchScreen('adhkar', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+            </svg>
+            <span class="nav-label">زیکر</span>
+        </button>
+        
+        <button class="nav-btn" onclick="switchScreen('dua', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="nav-label">فەرمودە</span>
+        </button>
+        
+        <button class="nav-btn" onclick="switchScreen('settings', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H5.78a1.65 1.65 0 0 0-1.51 1 1.65 1.65 0 0 0 .33 1.82L12 22z"/>
+                <path d="M18 2A6 6 0 0 0 6 2c0 3.5 3 6 6 6s6-2.5 6-6z"/>
+            </svg>
+            <span class="nav-label">ڕێکخستن</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ==================== MODAL: دەنگی بانگ ==================== -->
+<div class="modal-overlay" id="modal-sound" onclick="if(event.target===this) closeModal('modal-sound')">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">🔊 دەنگی بانگ هەڵبژێرە</div>
+            <button class="modal-close" onclick="closeModal('modal-sound')">✕</button>
+        </div>
+        <div class="modal-body" id="sound-options">
+            <!-- لێرە دەنگەکان دادەنرێت -->
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: شوێن ==================== -->
+<div class="modal-overlay" id="modal-location" onclick="if(event.target===this) closeModal('modal-location')">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">📍 شوێن هەڵبژێرە</div>
+            <button class="modal-close" onclick="closeModal('modal-location')">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" class="search-input" id="city-search" placeholder="گەڕان بۆ شار..." oninput="filterCities(this.value)">
+            <div id="city-list" class="city-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: زمان ==================== -->
+<div class="modal-overlay" id="modal-language" onclick="if(event.target===this) closeModal('modal-language')">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">🌐 زمان هەڵبژێرە</div>
+            <button class="modal-close" onclick="closeModal('modal-language')">✕</button>
+        </div>
+        <div class="modal-body" id="language-list">
+            <!-- لێرە زمانەکان دادەنرێت -->
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: دەربارە ==================== -->
+<div class="modal-overlay" id="modal-about" onclick="if(event.target===this) closeModal('modal-about')">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">🕋 دەربارەی درود</div>
+            <button class="modal-close" onclick="closeModal('modal-about')">✕</button>
+        </div>
+        <div class="modal-body about-content">
+            <div class="about-logo">🕌</div>
+            <h3>درود | Droood</h3>
+            <p class="about-version">ڤێرژن ١.٠.٠</p>
+            <p class="about-description">ئەپێکی ئیسلامی بۆ کاتی نوێژ، زیکر، فەرمودە و قورئان</p>
+            
+            <div class="about-divider"></div>
+            
+            <div class="about-stats">
+                <div class="about-stat">
+                    <div class="about-stat-value">٦</div>
+                    <div class="about-stat-label">نوێژ</div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-value">٤٠+</div>
+                    <div class="about-stat-label">زیکر</div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-value">٣٠+</div>
+                    <div class="about-stat-label">فەرمودە</div>
+                </div>
+            </div>
+            
+            <div class="about-divider"></div>
+            
+            <div class="about-developer">
+                <p>پەرەپێدراو لەلایەن</p>
+                <p class="developer-name">ماجد أنور حمە ڕەحیم</p>
+            </div>
+            
+            <button class="about-button" onclick="closeModal('modal-about')">باشە</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: تایبەتی بانگ ==================== -->
+<div class="modal-overlay" id="modal-test" onclick="if(event.target===this) closeModal('modal-test')">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">🧪 تایبەتی بانگ</div>
+            <button class="modal-close" onclick="closeModal('modal-test')">✕</button>
+        </div>
+        <div class="modal-body test-panel">
+            <p class="test-description">دەنگەکان تێست بکە و بینە کامەیان باشترە</p>
+            
+            <div class="test-controls">
+                <button class="test-btn primary" id="test-start-btn" onclick="startAutoTest()">▶ دەستپێکردنی تایبەت</button>
+                <button class="test-btn secondary" id="test-stop-btn" onclick="stopAutoTest()" disabled>⏹ وەستان</button>
+            </div>
+            
+            <div class="test-progress">
+                <div class="test-progress-bar" id="test-progress-bar" style="width: 0%"></div>
+            </div>
+            
+            <div class="test-log" id="test-log">
+                <div class="log-entry">🟢 ئامادەیە...</div>
+            </div>
+            
+            <div class="test-info">
+                <p>⏱️ هەر ٣٠ چرکە جارێک نوێژی داهاتوو دەنگ دەدرێت</p>
+                <p>🔊 پێویستە لە http://localhost بێت</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
+
+<!-- ✅ تۆمارکردنی Service Worker -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('✅ Service Worker تۆمارکرا:', reg.scope))
+                .catch(err => console.log('❌ Service Worker تۆمارنەکرا:', err));
+        });
+    }
+</script>
+
+<!-- ==================== فەنکشنەکانی PWA ==================== -->
+<script>
+    // ==================== PWA SUPPORT ====================
+
+    // پشکنین ئایا وەک ئەپ کراوەتەوە
+    function isRunningAsApp() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.navigator.standalone === true;
+    }
+
+    // ڕێکخستنی status bar بۆ ئەپ
+    function adjustForAppMode() {
+        if (isRunningAsApp()) {
+            document.body.classList.add('app-mode');
+            console.log('📱 ئەپ وەک standalone کراوەتەوە');
+            
+            // شاردنەوەی دوگمەی نصب
+            const installBtn = document.getElementById('install-btn');
+            if (installBtn) installBtn.style.display = 'none';
+        }
+    }
+
+    // پێشنیاری نصبکردنی ئەپ بۆ ئەندرۆید/دێسکتۆپ
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // پیشاندانی دوگمەی نصب
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) {
+            installBtn.style.display = 'flex';
+        }
+    });
+
+    function installApp() {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('✅ ئەپ نصب کرا');
+            }
+            deferredPrompt = null;
+        });
+    }
+
+    // پشکنینی دۆخی ئۆفلاین/ئۆنلاین
+    function updateOnlineStatus() {
+        const statusEl = document.getElementById('connection-status');
+        if (!statusEl) return;
+        
+        if (navigator.onLine) {
+            statusEl.textContent = '🔵 ئۆنلاین';
+            statusEl.style.color = '#4caf50';
+        } else {
+            statusEl.textContent = '🔴 ئۆفلاین';
+            statusEl.style.color = '#f44336';
+        }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // شاردنەوەی splash screen
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.classList.add('hidden');
+                setTimeout(() => splash.remove(), 500);
+            }
+        }, 1000);
+    });
+
+    // بانگەواز لە سەرەتادا
+    adjustForAppMode();
+</script>
+
+<!-- JavaScriptەکان -->
+<script src="script.js"></script>
+</body>
+</html>
