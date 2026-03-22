@@ -1,334 +1,800 @@
 <!DOCTYPE html>
 <html lang="ckb" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>درود — نوێژ، زیکر، فەرمودە</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/adhkar.css">
-    <link rel="stylesheet" href="css/dua.css">
-    <link rel="stylesheet" href="css/settings.css">
-    
-    <style>
-        /* ستایلی کاتی بۆ تاقیکردنەوە */
-        .test-banner { background: #c9a84c; color: black; padding: 10px; margin: 10px; text-align: center; border-radius: 10px; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="کاتی بانگ">
+<meta name="theme-color" content="#1a3a2a">
+<title>کاتی بانگ - یادەوەری نوێژ</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi2qnYp9iq2bYg2qfYp9mG2KciLCJzaG9ydF9uYW1lIjoi2qnYp9iq2bYg2qfYp9mG2KciLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFhM2EyYSIsInRoZW1lX2NvbG9yIjoiIzFhM2EyYSJ9">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --green-dark: #0d2818;
+    --green-mid: #1a3a2a;
+    --green-light: #2d5a3d;
+    --green-accent: #4a8c5c;
+    --gold: #c9a227;
+    --gold-light: #e8c84a;
+    --cream: #f5f0e8;
+    --text-light: #e8dcc8;
+    --text-muted: #a89880;
+    --card-bg: rgba(255,255,255,0.07);
+    --border: rgba(201,162,39,0.3);
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: linear-gradient(160deg, var(--green-dark) 0%, var(--green-mid) 50%, #0a1f14 100%);
+    min-height: 100vh;
+    color: var(--text-light);
+    direction: rtl;
+    text-align: right;
+    padding-bottom: 40px;
+  }
+
+  /* Geometric pattern overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,162,39,0.03) 40px, rgba(201,162,39,0.03) 41px),
+      repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(201,162,39,0.03) 40px, rgba(201,162,39,0.03) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 32px 0 20px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 12px auto 0;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  .header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* Mosque dome SVG decorative */
+  .mosque-icon {
+    width: 60px;
+    height: 50px;
+    margin: 0 auto 12px;
+    display: block;
+  }
+
+  /* Clock display */
+  .clock-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin: 16px 0;
+    backdrop-filter: blur(10px);
+  }
+
+  .current-time {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .current-date {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .next-prayer {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: rgba(201,162,39,0.12);
+    border: 1px solid rgba(201,162,39,0.25);
+    border-radius: 12px;
+    display: inline-block;
+    font-size: 14px;
+    color: var(--gold);
+  }
+
+  .next-prayer span { color: var(--gold-light); font-weight: 700; }
+
+  /* Prayer Cards */
+  .prayers-section { margin-top: 8px; }
+
+  .section-title {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    padding-right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  .prayer-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prayer-card::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .prayer-card:hover { background: rgba(255,255,255,0.1); }
+  .prayer-card:hover::before { opacity: 1; }
+
+  .prayer-card.active {
+    background: rgba(201,162,39,0.12);
+    border-color: rgba(201,162,39,0.5);
+  }
+
+  .prayer-card.active::before { opacity: 1; }
+
+  .prayer-card.passed {
+    opacity: 0.5;
+  }
+
+  .prayer-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(201,162,39,0.15);
+    border: 1px solid rgba(201,162,39,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+
+  .prayer-info { flex: 1; min-width: 0; }
+
+  .prayer-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .prayer-arabic {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .prayer-time-section { text-align: left; }
+
+  .prayer-time-display {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold-light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prayer-status {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    text-align: center;
+  }
+
+  .time-edit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .time-input {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--gold-light);
+    font-size: 18px;
+    font-weight: 700;
+    width: 100px;
+    text-align: center;
+    padding: 4px 8px;
+    outline: none;
+    direction: ltr;
+  }
+
+  .time-input:focus {
+    border-color: var(--gold);
+    background: rgba(201,162,39,0.1);
+  }
+
+  /* Toggle switch */
+  .toggle-switch {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    bottom: 3px;
+    left: 3px;
+    transition: 0.3s;
+  }
+
+  .toggle-switch input:checked + .toggle-slider {
+    background: rgba(201,162,39,0.4);
+    border-color: var(--gold);
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+    background: var(--gold-light);
+  }
+
+  /* Edit button */
+  .edit-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .edit-btn.save { border-color: var(--gold); color: var(--gold); }
+
+  /* Notification permission banner */
+  .notif-banner {
+    background: rgba(201,162,39,0.1);
+    border: 1px solid rgba(201,162,39,0.3);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notif-banner .icon { font-size: 24px; flex-shrink: 0; }
+
+  .notif-banner-text { flex: 1; }
+  .notif-banner-text p { font-size: 13px; color: var(--text-light); }
+  .notif-banner-text small { font-size: 11px; color: var(--text-muted); }
+
+  .allow-btn {
+    background: var(--gold);
+    color: var(--green-dark);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .allow-btn:hover { background: var(--gold-light); }
+
+  /* Adhan sound */
+  .sound-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin: 12px 0;
+  }
+
+  .sound-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .sound-label { font-size: 15px; color: var(--text-light); }
+  .sound-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  select.sound-select {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--text-light);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  select.sound-select option { background: var(--green-dark); }
+
+  /* Countdown */
+  .countdown-bar {
+    background: rgba(201,162,39,0.08);
+    border: 1px solid rgba(201,162,39,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    margin: 4px 0 16px;
+  }
+
+  .countdown-bar .label { font-size: 12px; color: var(--text-muted); }
+
+  .countdown-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* Install banner */
+  .install-banner {
+    background: rgba(45,90,61,0.5);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .install-banner strong { color: var(--gold); }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    display: inline-block;
+    margin-left: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .passed-line {
+    text-decoration: line-through;
+    text-decoration-color: var(--text-muted);
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 16px 0;
+  }
+
+  /* RTL time input fix */
+  input[type="time"] { direction: ltr; }
+</style>
 </head>
 <body>
+<div class="container">
 
-<!-- ==================== SPLASH SCREEN ==================== -->
-<div class="splash-screen" id="splash-screen">
-    <div class="splash-logo">🕌</div>
+  <!-- Header -->
+  <div class="header">
+    <svg class="mosque-icon" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 2 C30 2, 22 10, 22 18 L38 18 C38 10 30 2 30 2Z" fill="#c9a227" opacity="0.9"/>
+      <rect x="10" y="18" width="40" height="22" rx="3" fill="#c9a227" opacity="0.6"/>
+      <rect x="15" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
+      <rect x="26" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
+      <rect x="37" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
+      <rect x="5" y="38" width="50" height="4" rx="2" fill="#c9a227" opacity="0.5"/>
+      <line x1="30" y1="0" x2="30" y2="4" stroke="#c9a227" stroke-width="1.5"/>
+      <circle cx="30" cy="1" r="1.5" fill="#c9a227"/>
+    </svg>
+    <h1>کاتی بانگ</h1>
+    <p>یادەوەری نوێژی ڕۆژانە</p>
+  </div>
+
+  <!-- Current Time -->
+  <div class="clock-card">
+    <div class="current-time" id="currentTime">--:--:--</div>
+    <div class="current-date" id="currentDate"></div>
+    <div style="margin-top: 10px;">
+      <div class="next-prayer" id="nextPrayerInfo">⏳ چاوەڕوانی...</div>
+    </div>
+  </div>
+
+  <!-- Countdown to next prayer -->
+  <div class="countdown-bar">
+    <div class="label">کات تا نوێژی داهاتوو</div>
+    <span class="countdown-value" id="countdown">--:--:--</span>
+  </div>
+
+  <!-- Notification Permission -->
+  <div class="notif-banner" id="notifBanner" style="display:none">
+    <div class="icon">🔔</div>
+    <div class="notif-banner-text">
+      <p>ڕێگەپێدان بدە بۆ ئاگادارکردنەوە</p>
+      <small>پێویستە بۆ کاتی بانگ ئاگادارت بکات</small>
+    </div>
+    <button class="allow-btn" onclick="requestNotif()">ڕێگەدان</button>
+  </div>
+
+  <!-- Sound Setting -->
+  <div class="sound-section">
+    <div class="sound-row">
+      <div>
+        <div class="sound-label">🔊 دەنگی بانگ</div>
+        <div class="sound-sub">کاتی ئاگادارکردنەوە</div>
+      </div>
+      <select class="sound-select" id="soundType">
+        <option value="adhan">بانگی ئیسلامی</option>
+        <option value="beep">دەنگی سادە</option>
+        <option value="silent">بێدەنگ (ویبرەیشن)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Prayer Times -->
+  <div class="prayers-section">
+    <div class="section-title">کاتەکانی نوێژ — دیاریکردن و چالاककردن</div>
+
+    <!-- Prayers will be rendered here -->
+    <div id="prayersList"></div>
+  </div>
+
+  <!-- Install Guide -->
+  <div class="install-banner">
+    <strong>📱 نصبکردنی ئەپ لەسەر موبایل</strong><br>
+    <span style="font-size:12px">
+      ئەندرۆید: مینوی گەڕۆکە ← "زیادکردن بۆ سکرینی سەرەکی"<br>
+      ئایفۆن: دوگمەی Share ← "Add to Home Screen"
+    </span>
+  </div>
+
+  <div class="divider"></div>
+  <div style="text-align:center; font-size:11px; color:var(--text-muted); padding-bottom:20px;">
+    <span class="status-dot"></span>
+    کاتەکانت پاراستراون لەسەر موبایلەکەت
+  </div>
+
 </div>
-
-<div class="phone-shell">
-    
-    <!-- ==================== STATUS BAR ==================== -->
-    <div class="status-bar">
-        <span id="clock-status">12:00</span>
-        <span>درود | Droood</span>
-        <span id="connection-status">🔵 ئۆنلاین</span>
-    </div>
-
-    <!-- ==================== HOME SCREEN ==================== -->
-    <div class="screen active" id="screen-home">
-        <div class="home-header">
-            <div class="location-badge" id="location-display">
-                <span>📍</span>
-                <span id="location-name">سلێمانی، عێراق</span>
-            </div>
-            
-            <div class="date-badge" id="date-display">
-                <span id="gregorian-date">١٩ ئازار ٢٠٢٦</span>
-                <span class="separator">•</span>
-                <span id="hijri-date">١٨ ڕەمەزان ١٤٤٧</span>
-            </div>
-
-            <div class="next-prayer-card">
-                <div class="next-prayer-label">نوێژی داهاتوو</div>
-                <div class="next-prayer-name" id="next-prayer-name">بەیانی</div>
-                <div class="next-prayer-time" id="next-prayer-time">٠٤:٥٨</div>
-                
-                <div class="countdown-container">
-                    <div class="countdown-label">کاتی ماوە</div>
-                    <div class="countdown" id="countdown">٠٥:٢١:١٤</div>
-                </div>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill" style="width: 65%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="scroll-area">
-            <h3 class="section-title">🕐 کاتی نوێژەکان</h3>
-            
-            <div class="prayers-list" id="prayers-list"></div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="completed-prayers">٦</div>
-                    <div class="stat-label">نوێژی تەواو</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="remaining-prayers">٠</div>
-                    <div class="stat-label">نوێژی ماوە</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="next-prayer-in">٠٥خ</div>
-                    <div class="stat-label">تا نوێژ</div>
-                </div>
-            </div>
-            
-            <div id="install-btn" class="install-banner" onclick="window.installApp()">
-                <span>📲</span>
-                <span>ئەپەکە نصب بکە</span>
-                <span>›</span>
-            </div>
-            
-            <div class="test-banner" onclick="window.openTestPanel()">
-                <span>🔊</span>
-                <span>دەنگی بانگ تایبەت بکە</span>
-                <span>›</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== ADHKAR SCREEN ==================== -->
-    <div class="screen" id="screen-adhkar">
-        <div class="screen-header">
-            <h2>📿 زیکرەکان</h2>
-            <p>ئەوراد و تەسبیحات</p>
-        </div>
-        
-        <div class="adhkar-tabs">
-            <button class="tab-btn active" onclick="window.switchAdhkarTab('morning', this)">🌅 بەیانی</button>
-            <button class="tab-btn" onclick="window.switchAdhkarTab('evening', this)">🌆 ئێواران</button>
-            <button class="tab-btn" onclick="window.switchAdhkarTab('night', this)">🌙 خەوتن</button>
-            <button class="tab-btn" onclick="window.switchAdhkarTab('prayer', this)">🕌 دوای نوێژ</button>
-        </div>
-        
-        <div class="scroll-area" id="adhkar-container"></div>
-    </div>
-
-    <!-- ==================== DUA SCREEN ==================== -->
-    <div class="screen" id="screen-dua">
-        <div class="screen-header">
-            <h2>🤲 فەرمودەکان</h2>
-            <p>دوعا و پاڕانەوە</p>
-        </div>
-        
-        <div class="dua-tabs">
-            <button class="tab-btn active" onclick="window.switchDuaTab('daily', this)">📅 ڕۆژانە</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('morning', this)">🌅 بەیانی</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('evening', this)">🌆 ئێواران</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('sleep', this)">😴 خەوتن</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('waking', this)">☀️ هەڵسان</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('food', this)">🍽 خواردن</button>
-            <button class="tab-btn" onclick="window.switchDuaTab('travel', this)">✈️ گەشت</button>
-        </div>
-        
-        <div class="scroll-area" id="dua-container"></div>
-    </div>
-
-    <!-- ==================== SETTINGS SCREEN ==================== -->
-    <div class="screen" id="screen-settings">
-        <div class="screen-header">
-            <h2>⚙️ ڕێکخستنەکان</h2>
-            <p>تایبەتمەندی و ڕێکخستن</p>
-        </div>
-        
-        <div class="scroll-area">
-            <div class="settings-group">
-                <h4 class="settings-group-title">🔊 دەنگەکان</h4>
-                
-                <div class="settings-item" onclick="window.openSoundModal()">
-                    <div class="settings-item-icon">🎵</div>
-                    <div class="settings-item-content">
-                        <div class="settings-item-title">دەنگی بانگ</div>
-                        <div class="settings-item-subtitle" id="selected-sound">بانگی مەککە</div>
-                    </div>
-                    <div class="settings-item-arrow">›</div>
-                </div>
-                
-                <div class="settings-item">
-                    <div class="settings-item-icon">🔔</div>
-                    <div class="settings-item-content">
-                        <div class="settings-item-title">ئاگادارکردنەوە</div>
-                        <div class="settings-item-subtitle">١٥ خولەک پێش نوێژ</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="notifications-toggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="settings-group">
-                <h4 class="settings-group-title">📍 شوێن</h4>
-                <div class="settings-item" onclick="window.openLocationModal()">
-                    <div class="settings-item-icon">🏙️</div>
-                    <div class="settings-item-content">
-                        <div class="settings-item-title">شاری خۆت هەڵبژێرە</div>
-                        <div class="settings-item-subtitle" id="selected-city">سلێمانی، عێراق</div>
-                    </div>
-                    <div class="settings-item-arrow">›</div>
-                </div>
-            </div>
-            
-            <div class="settings-group">
-                <h4 class="settings-group-title">🌐 زمان</h4>
-                <div class="settings-item" onclick="window.openLanguageModal()">
-                    <div class="settings-item-icon">🗣️</div>
-                    <div class="settings-item-content">
-                        <div class="settings-item-title">زمانی ئەپ</div>
-                        <div class="settings-item-subtitle" id="selected-language">کوردی (سۆرانی)</div>
-                    </div>
-                    <div class="settings-item-arrow">›</div>
-                </div>
-            </div>
-            
-            <div class="settings-group">
-                <div class="settings-item test-mode" onclick="window.openTestPanel()">
-                    <div class="settings-item-icon">🧪</div>
-                    <div class="settings-item-content">
-                        <div class="settings-item-title" style="color: #c9a84c;">تایبەتی بانگ</div>
-                        <div class="settings-item-subtitle">تێستکردنی دەنگەکان</div>
-                    </div>
-                    <div class="settings-item-arrow" style="color: #c9a84c;">›</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== BOTTOM NAVIGATION ==================== -->
-    <nav class="bottom-nav">
-        <button class="nav-btn active" onclick="window.switchScreen('home', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span class="nav-label">نوێژ</span>
-        </button>
-        
-        <button class="nav-btn" onclick="window.switchScreen('adhkar', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-            </svg>
-            <span class="nav-label">زیکر</span>
-        </button>
-        
-        <button class="nav-btn" onclick="window.switchScreen('dua', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span class="nav-label">فەرمودە</span>
-        </button>
-        
-        <button class="nav-btn" onclick="window.switchScreen('settings', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H5.78a1.65 1.65 0 0 0-1.51 1 1.65 1.65 0 0 0 .33 1.82L12 22z"/>
-                <path d="M18 2A6 6 0 0 0 6 2c0 3.5 3 6 6 6s6-2.5 6-6z"/>
-            </svg>
-            <span class="nav-label">ڕێکخستن</span>
-        </button>
-    </nav>
-</div>
-
-<!-- مۆدالەکان بە کورتی -->
-<div class="modal-overlay" id="modal-sound" onclick="if(event.target===this) window.closeModal('modal-sound')">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-header">
-            <div class="modal-title">🔊 دەنگی بانگ هەڵبژێرە</div>
-            <button class="modal-close" onclick="window.closeModal('modal-sound')">✕</button>
-        </div>
-        <div class="modal-body" id="sound-options"></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-location" onclick="if(event.target===this) window.closeModal('modal-location')">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-header">
-            <div class="modal-title">📍 شوێن هەڵبژێرە</div>
-            <button class="modal-close" onclick="window.closeModal('modal-location')">✕</button>
-        </div>
-        <div class="modal-body">
-            <input type="text" class="search-input" id="city-search" placeholder="گەڕان بۆ شار..." oninput="window.filterCities(this.value)">
-            <div id="city-list" class="city-list"></div>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-language" onclick="if(event.target===this) window.closeModal('modal-language')">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-header">
-            <div class="modal-title">🌐 زمان هەڵبژێرە</div>
-            <button class="modal-close" onclick="window.closeModal('modal-language')">✕</button>
-        </div>
-        <div class="modal-body" id="language-list"></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-about" onclick="if(event.target===this) window.closeModal('modal-about')">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-header">
-            <div class="modal-title">🕋 دەربارەی درود</div>
-            <button class="modal-close" onclick="window.closeModal('modal-about')">✕</button>
-        </div>
-        <div class="modal-body about-content">
-            <div class="about-logo">🕌</div>
-            <h3>درود | Droood</h3>
-            <p class="about-version">ڤێرژن ١.٠.٠</p>
-            <button class="about-button" onclick="window.closeModal('modal-about')">باشە</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-test" onclick="if(event.target===this) window.closeModal('modal-test')">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-header">
-            <div class="modal-title">🧪 تایبەتی بانگ</div>
-            <button class="modal-close" onclick="window.closeModal('modal-test')">✕</button>
-        </div>
-        <div class="modal-body test-panel">
-            <p class="test-description">دەنگەکان تێست بکە و بینە کامەیان باشترە</p>
-            
-            <div class="test-controls">
-                <button class="test-btn primary" id="test-start-btn" onclick="window.startAutoTest()">▶ دەستپێکردن</button>
-                <button class="test-btn secondary" id="test-stop-btn" onclick="window.stopAutoTest()" disabled>⏹ وەستان</button>
-            </div>
-            
-            <div class="test-progress">
-                <div class="test-progress-bar" id="test-progress-bar" style="width: 0%"></div>
-            </div>
-            
-            <div class="test-log" id="test-log">
-                <div class="log-entry">🟢 ئامادەیە...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== SCRIPTS ==================== -->
-<script src="script.js"></script>
 
 <script>
-    // ئەمە بۆ دڵنیابوونە لە ڕاگەیاندنی فەنکشنەکان پێش بارکردنی script.js
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('HTML تەواو بارکرا');
-    });
-</script>
+const PRAYERS = [
+  { id: 'fajr',   name: 'بەیانی',   arabic: 'الفجر',  icon: '🌙', defaultTime: '05:00' },
+  { id: 'dhuhr',  name: 'نیوەرۆ',   arabic: 'الظهر',  icon: '☀️', defaultTime: '12:30' },
+  { id: 'asr',    name: 'عەسر',     arabic: 'العصر',  icon: '🌤️', defaultTime: '15:45' },
+  { id: 'maghrib',name: 'ئیوارە',   arabic: 'المغرب', icon: '🌅', defaultTime: '18:15' },
+  { id: 'isha',   name: 'عیشا',     arabic: 'العشاء', icon: '🌟', defaultTime: '19:45' },
+];
 
+function loadData() {
+  try {
+    const saved = localStorage.getItem('prayerTimes');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  const d = {};
+  PRAYERS.forEach(p => {
+    d[p.id] = { time: p.defaultTime, enabled: true };
+  });
+  return d;
+}
+
+function saveData(data) {
+  try { localStorage.setItem('prayerTimes', JSON.stringify(data)); } catch(e) {}
+}
+
+let data = loadData();
+let editingId = null;
+
+function renderPrayers() {
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const list = document.getElementById('prayersList');
+  list.innerHTML = '';
+
+  PRAYERS.forEach(p => {
+    const pd = data[p.id];
+    const [h, m] = pd.time.split(':').map(Number);
+    const pMins = h * 60 + m;
+    const passed = pMins < nowMins;
+    const isNext = getNextPrayer() && getNextPrayer().id === p.id;
+
+    const card = document.createElement('div');
+    card.className = 'prayer-card' + (isNext ? ' active' : '') + (passed && !isNext ? ' passed' : '');
+
+    card.innerHTML = `
+      <div class="prayer-icon">${p.icon}</div>
+      <div class="prayer-info">
+        <div class="prayer-name ${passed && !isNext ? 'passed-line' : ''}">${p.name}</div>
+        <div class="prayer-arabic">${p.arabic}</div>
+      </div>
+      <div class="prayer-time-section">
+        ${editingId === p.id
+          ? `<input type="time" class="time-input" id="timeInput_${p.id}" value="${pd.time}">`
+          : `<div class="prayer-time-display">${pd.time}</div>`
+        }
+        <div style="display:flex; gap:8px; margin-top:4px; align-items:center; justify-content:center;">
+          ${editingId === p.id
+            ? `<button class="edit-btn save" onclick="saveTime('${p.id}')">پاراستن</button>`
+            : `<button class="edit-btn" onclick="startEdit('${p.id}')">گۆڕین</button>`
+          }
+          <label class="toggle-switch">
+            <input type="checkbox" ${pd.enabled ? 'checked' : ''} onchange="togglePrayer('${p.id}', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        ${passed && !isNext ? '<div class="prayer-status">تێپەربوو</div>' : ''}
+        ${isNext ? '<div class="prayer-status" style="color:var(--gold)">داهاتوو ⬆</div>' : ''}
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function startEdit(id) {
+  editingId = id;
+  renderPrayers();
+  setTimeout(() => {
+    const inp = document.getElementById('timeInput_' + id);
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function saveTime(id) {
+  const inp = document.getElementById('timeInput_' + id);
+  if (inp && inp.value) {
+    data[id].time = inp.value;
+    saveData(data);
+  }
+  editingId = null;
+  renderPrayers();
+  updateNextPrayer();
+}
+
+function togglePrayer(id, checked) {
+  data[id].enabled = checked;
+  saveData(data);
+}
+
+function getNextPrayer() {
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  for (const p of PRAYERS) {
+    if (!data[p.id].enabled) continue;
+    const [h, m] = data[p.id].time.split(':').map(Number);
+    if (h * 60 + m > nowMins) return { ...p, time: data[p.id].time };
+  }
+  return PRAYERS.find(p => data[p.id].enabled)
+    ? { ...PRAYERS.find(p => data[p.id].enabled), time: data[PRAYERS.find(p => data[p.id].enabled).id].time }
+    : null;
+}
+
+function updateNextPrayer() {
+  const next = getNextPrayer();
+  const el = document.getElementById('nextPrayerInfo');
+  if (!next) { el.innerHTML = 'هیچ نوێژێک چالاک نیە'; return; }
+  el.innerHTML = `داهاتوو: <span>${next.name} — ${next.time}</span>`;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+  const el = document.getElementById('countdown');
+  const next = getNextPrayer();
+  if (!next) { el.textContent = '--:--:--'; return; }
+  const [h, m] = next.time.split(':').map(Number);
+  let diffMins = h * 60 + m - nowMins;
+  if (diffMins < 0) diffMins += 24 * 60;
+  const hours = Math.floor(diffMins / 60);
+  const mins = Math.floor(diffMins % 60);
+  const secs = Math.floor((diffMins % 1) * 60);
+  el.textContent = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('currentTime').textContent = now.toLocaleTimeString('ckb', { hour12: false });
+  const days = ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'];
+  const months = ['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەمموز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
+  document.getElementById('currentDate').textContent = `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+// Notification
+function requestNotif() {
+  if (!('Notification' in window)) { alert('گەڕۆکەکەت پشتیوانی ئاگادارکردنەوە ناکات'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      document.getElementById('notifBanner').style.display = 'none';
+      scheduleNotifications();
+    }
+  });
+}
+
+function scheduleNotifications() {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const now = new Date();
+  PRAYERS.forEach(p => {
+    if (!data[p.id].enabled) return;
+    const [h, m] = data[p.id].time.split(':').map(Number);
+    const pTime = new Date();
+    pTime.setHours(h, m, 0, 0);
+    const diff = pTime - now;
+    if (diff > 0 && diff < 24 * 60 * 60 * 1000) {
+      setTimeout(() => {
+        new Notification('⏰ کاتی ' + p.name, {
+          body: `کاتی نوێژی ${p.name} گەیشتە — ${p.time}`,
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>',
+          badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>'
+        });
+      }, diff);
+    }
+  });
+}
+
+function checkPrayerTime() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  if (s !== 0) return;
+  PRAYERS.forEach(p => {
+    if (!data[p.id].enabled) return;
+    const [ph, pm] = data[p.id].time.split(':').map(Number);
+    if (ph === h && pm === m) {
+      if (Notification.permission === 'granted') {
+        new Notification('⏰ کاتی ' + p.name, {
+          body: `کاتی نوێژی ${p.name} گەیشتە — ${p.time}`,
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>'
+        });
+      }
+      playAdhan();
+    }
+  });
+}
+
+function playAdhan() {
+  const type = document.getElementById('soundType').value;
+  if (type === 'silent') return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (type === 'beep') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 1.5);
+    } else {
+      // Adhan-like tone sequence
+      const notes = [440, 495, 528, 495, 440, 415, 440];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        const t = ctx.currentTime + i * 0.5;
+        gain.gain.setValueAtTime(0.25, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        osc.start(t); osc.stop(t + 0.45);
+      });
+    }
+  } catch(e) {}
+}
+
+// Init
+if ('Notification' in window && Notification.permission === 'default') {
+  document.getElementById('notifBanner').style.display = 'flex';
+} else if ('Notification' in window && Notification.permission === 'granted') {
+  scheduleNotifications();
+}
+
+renderPrayers();
+updateNextPrayer();
+updateClock();
+updateCountdown();
+
+setInterval(() => {
+  updateClock();
+  updateCountdown();
+  checkPrayerTime();
+}, 1000);
+
+setInterval(renderPrayers, 60000);
+setInterval(updateNextPrayer, 60000);
+
+// Service Worker for background support
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response(''))));
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const url = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).catch(() => {});
+}
+</script>
 </body>
 </html>
