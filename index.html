@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alarm App Pro</title>
 <meta name="theme-color" content="#667eea">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="./manifest.json">
 
 <style>
 * {
@@ -38,10 +38,6 @@ h2 {
     font-size: 28px;
 }
 
-h2 span {
-    font-size: 32px;
-}
-
 .input-group {
     margin-bottom: 15px;
 }
@@ -59,13 +55,7 @@ input, textarea, select {
     border: 2px solid #ddd;
     border-radius: 10px;
     font-size: 16px;
-    transition: border-color 0.3s;
     box-sizing: border-box;
-}
-
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: #667eea;
 }
 
 textarea {
@@ -133,6 +123,7 @@ button:active {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .quick-btn {
@@ -142,6 +133,7 @@ button:active {
     margin-top: 0;
     padding: 12px;
     font-size: 14px;
+    min-width: 70px;
 }
 
 .test-btn {
@@ -217,13 +209,22 @@ button:active {
     background: #f8d7da;
     color: #721c24;
 }
+
+@media (max-width: 500px) {
+    .quick-row {
+        flex-wrap: wrap;
+    }
+    .quick-btn {
+        min-width: calc(25% - 8px);
+    }
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-    <h2><span>⏰</span> Alarm App Pro</h2>
+    <h2>⏰ Alarm App Pro</h2>
     
     <div class="input-group">
         <label>📝 ناونیشان</label>
@@ -281,9 +282,21 @@ let alarms = [];
 
 // Service Worker تۆمارکردن
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker تۆمارکرا'))
-        .catch(err => console.log('Service Worker هەڵە:', err));
+    navigator.serviceWorker.register('./sw.js')
+        .then(reg => {
+            console.log('Service Worker تۆمارکرا');
+            // هەر کاتێک پەڕە بارکرا، بڵێ Service Worker چالاک بێت
+            if (reg.active) {
+                console.log('Service Worker چالاکە');
+            }
+        })
+        .catch(err => {
+            console.log('Service Worker هەڵە:', err);
+            // ئەگەر Service Worker تۆمار نەبوو، ڕێگەپێدانی Notification بدە
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+        });
 }
 
 // داواکردنی ڕێگەپێدان
@@ -295,14 +308,17 @@ function playSound() {
     let sound = document.getElementById("sound").checked;
     if (!sound) return;
     
-    let audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
-    audio.loop = false;
-    audio.volume = 1;
-    audio.play().catch(e => {
-        // ئەگەر یەکەم دەنگ نەکرد، ئەمەی دووەم
-        let audio2 = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
-        audio2.play();
-    });
+    try {
+        let audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
+        audio.volume = 1;
+        audio.play().catch(e => {
+            // ئەگەر نەکرد، دەنگی دووەم
+            let audio2 = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+            audio2.play();
+        });
+    } catch(e) {
+        console.log("دەنگ نەکرا");
+    }
 }
 
 function vibratePhone() {
@@ -312,11 +328,10 @@ function vibratePhone() {
     }
 }
 
-// ناردنی ئاگادارکردنەوە لە ڕێگەی Service Worker (ئەمە گرنگە!)
 function sendNotification(title, message) {
     if (Notification.permission !== "granted") return;
     
-    // بەکارهێنانی Service Worker بۆ ناردنی ئاگادارکردنەوە
+    // یەکەم: هەوڵبدە لە ڕێگەی Service Worker
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.getRegistration().then(reg => {
             if (reg) {
@@ -328,14 +343,18 @@ function sendNotification(title, message) {
                     requireInteraction: true,
                     tag: "alarm-" + Date.now()
                 });
+            } else {
+                // ئەگەر Service Worker نەبوو، بە ڕێگای ئاسایی
+                new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
             }
         });
     } else {
         // ئەگەر Service Worker نەبوو، بە ڕێگای ئاسایی
-        new Notification(title, {
-            body: message,
-            icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-        });
+        try {
+            new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
+        } catch(e) {
+            console.log("Notification نەنێردرا");
+        }
     }
 }
 
@@ -361,7 +380,6 @@ function setAlarm() {
     let [hours, minutes] = time.split(":");
     hours = parseInt(hours);
     
-    // گۆڕینی کات بۆ ٢٤ کاتژمێری
     if (ampm === "PM" && hours !== 12) hours += 12;
     if (ampm === "AM" && hours === 12) hours = 0;
     
@@ -391,7 +409,6 @@ function setAlarm() {
     updateAlarmList();
     showStatus(`✅ Alarm بۆ کاتی ${timeStr} دیاری کرا`, true);
     
-    // خاوێنکردنەوە
     document.getElementById("title").value = "";
     document.getElementById("message").value = "";
     document.getElementById("time").value = "";
@@ -466,6 +483,7 @@ function updateAlarmList() {
 }
 
 function escapeHtml(text) {
+    if (!text) return "";
     let div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
@@ -505,7 +523,6 @@ setInterval(() => {
     }
 }, 1000);
 
-// بارکردنی Alarmەکان
 loadAlarms();
 </script>
 
