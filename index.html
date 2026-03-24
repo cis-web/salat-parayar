@@ -1,543 +1,174 @@
 <!DOCTYPE html>
 <html lang="ku">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ئەپی ئاگادارکردنەوە - وەشانی پێشکەوتوو</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 25px;
-            padding: 20px;
-            max-width: 550px;
-            width: 100%;
-            margin: 0 auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .permission-box {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .permission-btn {
-            background: #28a745;
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 14px;
-        }
-        
-        .input-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: bold;
-        }
-        
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        
-        textarea {
-            min-height: 80px;
-        }
-        
-        .time-row {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .time-row input {
-            flex: 2;
-        }
-        
-        .time-row select {
-            flex: 1;
-        }
-        
-        .options {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 15px;
-            margin: 15px 0;
-        }
-        
-        .option-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .option-item label {
-            margin-bottom: 0;
-        }
-        
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .quick-times {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-        }
-        
-        .quick-time {
-            background: #e0e0e0;
-            color: #333;
-            padding: 10px;
-            font-size: 14px;
-            text-align: center;
-            margin: 0;
-        }
-        
-        .scheduled-list {
-            margin-top: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        
-        .scheduled-item {
-            background: white;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #667eea;
-        }
-        
-        .scheduled-info {
-            flex: 1;
-        }
-        
-        .scheduled-title {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        
-        .scheduled-time {
-            font-size: 11px;
-            color: #666;
-        }
-        
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: auto;
-            margin: 0;
-        }
-        
-        .status {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            display: none;
-        }
-        
-        .test-btn {
-            background: #ff9800;
-            margin-top: 10px;
-        }
-        
-        @media (max-width: 600px) {
-            .quick-times {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Alarm App</title>
+
+<meta name="theme-color" content="#667eea">
+<link rel="manifest" href="manifest.json">
+
+<style>
+
+body{
+font-family:sans-serif;
+background:#667eea;
+padding:20px;
+color:white;
+text-align:center;
+}
+
+.container{
+background:white;
+color:black;
+padding:20px;
+border-radius:20px;
+max-width:400px;
+margin:auto;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#667eea;
+color:white;
+border:none;
+border-radius:10px;
+margin-top:10px;
+}
+
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🔔 ئەپی ئاگادارکردنەوە</h1>
-        
-        <!-- ڕێگەپێدان -->
-        <div id="permissionBox" class="permission-box" style="display: none;">
-            <strong>⚠️ پێویستە ڕێگەپێدان بدەیت!</strong><br>
-            تکایە کلیک لە دوگمەی خوارەوە بکە و "Allow" هەڵبژێرە
-            <button id="requestPermBtn" class="permission-btn">📢 داواکردنی ڕێگەپێدان</button>
-        </div>
-        
-        <div class="input-group">
-            <label>📝 ناونیشان:</label>
-            <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ، کاتی کۆبوونەوە">
-        </div>
-        
-        <div class="input-group">
-            <label>💬 پەیام:</label>
-            <textarea id="message" placeholder="پەیامی ئاگادارکردنەوە"></textarea>
-        </div>
-        
-        <div class="input-group">
-            <label>⏰ کات:</label>
-            <div class="time-row">
-                <input type="time" id="alertTime">
-                <select id="ampm">
-                    <option value="AM">پێش نیوەڕۆ</option>
-                    <option value="PM">پاش نیوەڕۆ</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="options">
-            <div class="option-item">
-                <label>🔊 دەنگ</label>
-                <input type="checkbox" id="playSound" checked>
-            </div>
-            <div class="option-item">
-                <label>📳 هەژاندن</label>
-                <input type="checkbox" id="vibrate" checked>
-            </div>
-        </div>
-        
-        <button onclick="scheduleAlert()">📅 دیاریکردنی ئاگادارکردنەوە</button>
-        
-        <div class="quick-times">
-            <button class="quick-time" onclick="setQuickTime(1, 30, 'یەکەم ئاگاداری', 'کاتی ١:٣٠ گەیشتە!')">🕐 ١:٣٠</button>
-            <button class="quick-time" onclick="setQuickTime(2, 0, 'دووەم ئاگاداری', 'کاتی ٢:٠٠ گەیشتە!')">🕑 ٢:٠٠</button>
-            <button class="quick-time" onclick="setQuickTime(3, 30, 'سێیەم ئاگاداری', 'کاتی ٣:٣٠ گەیشتە!')">🕞 ٣:٣٠</button>
-            <button class="quick-time" onclick="setQuickTime(5, 0, 'پێنجەم ئاگاداری', 'کاتی ٥:٠٠ گەیشتە!')">🕔 ٥:٠٠</button>
-        </div>
-        
-        <button class="test-btn" onclick="testNow()">🧪 تاقیکردنەوەی ئێستا (دەنگ و هەژاندن)</button>
-        
-        <div class="scheduled-list">
-            <h3>📋 ئاگادارکردنەوە دیاریکراوەکان</h3>
-            <div id="alertsList"></div>
-        </div>
-        
-        <div id="status" class="status"></div>
-    </div>
-    
-    <script>
-        let scheduledAlerts = [];
-        let checkInterval;
-        
-        // ڕێگەپێدان
-        function checkPermission() {
-            if (Notification.permission === "granted") {
-                document.getElementById('permissionBox').style.display = 'none';
-                return true;
-            } else if (Notification.permission === "denied") {
-                document.getElementById('permissionBox').style.display = 'block';
-                document.getElementById('permissionBox').innerHTML = '<strong>❌ ڕێگەپێدان ڕەت کرا!</strong><br>تکایە لە تەنظیماتەکانی براوسەر ڕێگەپێدان بدە';
-                return false;
-            } else {
-                document.getElementById('permissionBox').style.display = 'block';
-                return false;
-            }
-        }
-        
-        document.getElementById('requestPermBtn')?.addEventListener('click', async () => {
-            const permission = await Notification.requestPermission();
-            if (permission === "granted") {
-                document.getElementById('permissionBox').style.display = 'none';
-                showStatus('✅ ڕێگەپێدان درا! ئێستا دەتوانیت ئاگادارکردنەوەکان بەکاربهێنیت', true);
-            }
-        });
-        
-        // تاقیکردنەوەی ئێستا
-        function testNow() {
-            const playSound = document.getElementById('playSound').checked;
-            const vibrateEnabled = document.getElementById('vibrate').checked;
-            
-            sendNotification('🧪 تاقیکردنەوە', 'ئەگەر دەنگ و هەژاندن دەبیست، ئەوا کاردەکات!', playSound, vibrateEnabled);
-            showStatus('🔔 تاقیکردنەوە نێردرا!', true);
-        }
-        
-        // دەنگ
-        function playSound() {
-            try {
-                const audio = new Audio('data:audio/wav;base64,U3RlYW0gU291bmQgRGF0YQ==');
-                audio.volume = 1;
-                audio.play().catch(e => {
-                    // ئەگەر نەکرد، بە Web Audio
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    oscillator.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    oscillator.frequency.value = 880;
-                    gain.gain.value = 0.3;
-                    oscillator.start();
-                    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
-                    oscillator.stop(audioCtx.currentTime + 1);
-                    audioCtx.resume();
-                });
-            } catch(e) {
-                console.log('دەنگ نەکرا');
-            }
-        }
-        
-        // هەژاندن
-        function vibrate() {
-            if (navigator.vibrate) {
-                navigator.vibrate([500, 200, 500, 200, 1000]);
-            }
-        }
-        
-        // ناردنی ئاگادارکردنەوە
-        function sendNotification(title, message, playSoundEnabled, vibrateEnabled) {
-            if (playSoundEnabled) {
-                playSound();
-            }
-            
-            if (vibrateEnabled) {
-                vibrate();
-            }
-            
-            if (Notification.permission === "granted") {
-                const options = {
-                    body: message,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
-                    badge: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
-                    requireInteraction: true,
-                    silent: !playSoundEnabled,
-                    vibrate: vibrateEnabled ? [200, 100, 200, 100, 200] : undefined
-                };
-                
-                const notification = new Notification(title, options);
-                
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
-                
-                return true;
-            }
-            return false;
-        }
-        
-        // دیاریکردنی کات
-        function scheduleAlert() {
-            if (Notification.permission !== "granted") {
-                showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
-                checkPermission();
-                return;
-            }
-            
-            const title = document.getElementById('title').value;
-            const message = document.getElementById('message').value;
-            let time = document.getElementById('alertTime').value;
-            const ampm = document.getElementById('ampm').value;
-            const playSound = document.getElementById('playSound').checked;
-            const vibrateEnabled = document.getElementById('vibrate').checked;
-            
-            if (!title || !message) {
-                showStatus('تکایە ناونیشان و پەیام پڕ بکەرەوە!', false);
-                return;
-            }
-            
-            if (!time) {
-                showStatus('تکایە کات دیاری بکە!', false);
-                return;
-            }
-            
-            let [hours, minutes] = time.split(':');
-            hours = parseInt(hours);
-            
-            if (ampm === 'PM' && hours !== 12) hours += 12;
-            if (ampm === 'AM' && hours === 12) hours = 0;
-            
-            const now = new Date();
-            const alertTime = new Date();
-            alertTime.setHours(hours, minutes, 0, 0);
-            
-            if (alertTime <= now) {
-                alertTime.setDate(alertTime.getDate() + 1);
-            }
-            
-            const timeStr = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = alertTime.toLocaleDateString('ku');
-            
-            scheduledAlerts.push({
-                id: Date.now(),
-                title, message,
-                time: `${timeStr} - ${dateStr}`,
-                timestamp: alertTime.getTime(),
-                playSound, vibrate: vibrateEnabled
-            });
-            
-            saveAlerts();
-            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeStr} دیاری کرا!`, true);
-            
-            document.getElementById('title').value = '';
-            document.getElementById('message').value = '';
-            document.getElementById('alertTime').value = '';
-        }
-        
-        // کاتی خێرا
-        function setQuickTime(hour, minute, title, message) {
-            if (Notification.permission !== "granted") {
-                showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
-                checkPermission();
-                return;
-            }
-            
-            const now = new Date();
-            const alertTime = new Date();
-            alertTime.setHours(hour, minute, 0, 0);
-            
-            if (alertTime <= now) {
-                alertTime.setDate(alertTime.getDate() + 1);
-            }
-            
-            const timeStr = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = alertTime.toLocaleDateString('ku');
-            
-            scheduledAlerts.push({
-                id: Date.now(),
-                title, message,
-                time: `${timeStr} - ${dateStr}`,
-                timestamp: alertTime.getTime(),
-                playSound: true,
-                vibrate: true
-            });
-            
-            saveAlerts();
-            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeStr} دیاری کرا!`, true);
-        }
-        
-        // هەڵگرتن
-        function saveAlerts() {
-            localStorage.setItem('scheduledAlerts', JSON.stringify(scheduledAlerts));
-            updateList();
-        }
-        
-        function loadAlerts() {
-            const saved = localStorage.getItem('scheduledAlerts');
-            if (saved) {
-                scheduledAlerts = JSON.parse(saved);
-                updateList();
-            }
-        }
-        
-        function updateList() {
-            const container = document.getElementById('alertsList');
-            if (scheduledAlerts.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">هیچ ئاگادارکردنەوەیەک دیاری نەکراوە</div>';
-                return;
-            }
-            
-            let html = '';
-            scheduledAlerts.forEach((alert, index) => {
-                html += `
-                    <div class="scheduled-item">
-                        <div class="scheduled-info">
-                            <div class="scheduled-title">${alert.title}</div>
-                            <div class="scheduled-time">${alert.time} - ${alert.message}</div>
-                        </div>
-                        <button class="delete-btn" onclick="deleteAlert(${index})">لابردن</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-        
-        function deleteAlert(index) {
-            scheduledAlerts.splice(index, 1);
-            saveAlerts();
-            showStatus('ئاگادارکردنەوە لابرا', true);
-        }
-        
-        function showStatus(msg, success) {
-            const status = document.getElementById('status');
-            status.textContent = msg;
-            status.className = `status ${success ? 'success' : 'error'}`;
-            status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 3000);
-        }
-        
-        // پشکنینی کات (هەر چرکەیەک)
-        function startChecker() {
-            if (checkInterval) clearInterval(checkInterval);
-            
-            checkInterval = setInterval(() => {
-                const now = Date.now();
-                const toTrigger = [];
-                
-                scheduledAlerts.forEach((alert, idx) => {
-                    if (alert.timestamp <= now) {
-                        toTrigger.push({alert, idx});
-                    }
-                });
-                
-                for (let i = toTrigger.length - 1; i >= 0; i--) {
-                    const {alert, idx} = toTrigger[i];
-                    sendNotification(alert.title, alert.message, alert.playSound, alert.vibrate);
-                    scheduledAlerts.splice(idx, 1);
-                }
-                
-                if (toTrigger.length > 0) {
-                    saveAlerts();
-                    showStatus(`🔔 ${toTrigger.length} ئاگادارکردنەوە نێردرا!`, true);
-                }
-            }, 1000);
-        }
-        
-        // دەستپێکردن
-        checkPermission();
-        loadAlerts();
-        startChecker();
-        
-        // ئاگادارکردنەوە کە پەڕە نەداخیت
-        window.addEventListener('beforeunload', () => {
-            if (checkInterval) clearInterval(checkInterval);
-        });
-    </script>
+
+<div class="container">
+
+<h2>🔔 Alarm App</h2>
+
+<input id="title" placeholder="ناونیشان">
+
+<textarea id="message" placeholder="پەیام"></textarea>
+
+<input type="time" id="time">
+
+<button onclick="setAlarm()">دیاریکردنی Alarm</button>
+
+<button onclick="test()">تاقیکردنەوە</button>
+
+</div>
+
+<script>
+
+let alarms=[]
+
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js')
+}
+
+function playSound(){
+
+let audio=new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg")
+
+audio.loop=true
+audio.volume=1
+audio.play()
+
+setTimeout(()=>{
+audio.pause()
+},5000)
+
+}
+
+function vibrate(){
+
+if(navigator.vibrate)
+navigator.vibrate([500,200,500,200,500])
+
+}
+
+function notify(title,message){
+
+navigator.serviceWorker.getRegistration().then(reg=>{
+
+reg.showNotification(title,{
+body:message,
+icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png",
+vibrate:[500,200,500],
+requireInteraction:true
+})
+
+})
+
+}
+
+function setAlarm(){
+
+let title=document.getElementById("title").value
+let message=document.getElementById("message").value
+let time=document.getElementById("time").value
+
+if(!time) return alert("کات دیاری بکە")
+
+let [h,m]=time.split(":")
+
+let now=new Date()
+
+let alarm=new Date()
+
+alarm.setHours(h)
+alarm.setMinutes(m)
+alarm.setSeconds(0)
+
+if(alarm<now) alarm.setDate(alarm.getDate()+1)
+
+alarms.push({
+title,
+message,
+time:alarm.getTime()
+})
+
+alert("Alarm دانرا")
+
+}
+
+function test(){
+
+playSound()
+vibrate()
+notify("Test Alarm","ئەگەر دەنگ و vibration هات کاردەکات")
+
+}
+
+setInterval(()=>{
+
+let now=Date.now()
+
+alarms.forEach((a,i)=>{
+
+if(now>=a.time){
+
+playSound()
+vibrate()
+notify(a.title,a.message)
+
+alarms.splice(i,1)
+
+}
+
+})
+
+},1000)
+
+</script>
+
 </body>
 </html>
