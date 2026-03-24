@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ئەپی ئاگادارکردنەوە بە کات</title>
+    <title>ئەپی ئاگادارکردنەوە - وەشانی پێشکەوتوو</title>
     <style>
         * {
             margin: 0;
@@ -17,17 +17,15 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         
         .container {
             background: white;
             border-radius: 25px;
-            padding: 25px;
+            padding: 20px;
             max-width: 550px;
             width: 100%;
+            margin: 0 auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
@@ -35,18 +33,27 @@
             color: #667eea;
             text-align: center;
             margin-bottom: 10px;
-            font-size: 26px;
+            font-size: 24px;
         }
         
-        .subtitle {
+        .permission-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
             text-align: center;
-            color: #666;
-            margin-bottom: 25px;
+        }
+        
+        .permission-btn {
+            background: #28a745;
+            margin-top: 10px;
+            padding: 10px;
             font-size: 14px;
         }
         
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
@@ -62,95 +69,71 @@
             border: 2px solid #ddd;
             border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
             box-sizing: border-box;
         }
         
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
         textarea {
-            resize: vertical;
             min-height: 80px;
         }
         
         .time-row {
             display: flex;
             gap: 10px;
-            align-items: center;
         }
         
         .time-row input {
-            flex: 1;
+            flex: 2;
         }
         
         .time-row select {
-            width: auto;
-            min-width: 80px;
+            flex: 1;
         }
         
         .options {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 15px;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         
         .option-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            align-items: center;
+            margin-bottom: 10px;
         }
         
         .option-item label {
             margin-bottom: 0;
-            cursor: pointer;
-        }
-        
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
         }
         
         button {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
             margin-top: 10px;
         }
         
-        button:hover {
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .quick-buttons {
+        .quick-times {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 15px 0;
         }
         
-        .quick-btn {
+        .quick-time {
             background: #e0e0e0;
             color: #333;
             padding: 10px;
-            font-size: 13px;
-            margin-top: 0;
+            font-size: 14px;
+            text-align: center;
+            margin: 0;
         }
         
         .scheduled-list {
@@ -162,15 +145,9 @@
             overflow-y: auto;
         }
         
-        .scheduled-list h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-        
         .scheduled-item {
             background: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             margin-bottom: 8px;
             display: flex;
@@ -189,7 +166,7 @@
         }
         
         .scheduled-time {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
         
@@ -197,16 +174,11 @@
             background: #dc3545;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 12px;
             width: auto;
             margin: 0;
-        }
-        
-        .delete-btn:hover {
-            background: #c82333;
         }
         
         .status {
@@ -217,47 +189,32 @@
             display: none;
         }
         
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .status.warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+        .test-btn {
+            background: #ff9800;
+            margin-top: 10px;
         }
         
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 22px;
-            }
-            
-            .quick-buttons {
-                grid-template-columns: 1fr;
+            .quick-times {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⏰ ئەپی ئاگادارکردنەوە</h1>
-        <div class="subtitle">کات دیاری بکە، ئاگادار دەبیتەوە!</div>
+        <h1>🔔 ئەپی ئاگادارکردنەوە</h1>
+        
+        <!-- ڕێگەپێدان -->
+        <div id="permissionBox" class="permission-box" style="display: none;">
+            <strong>⚠️ پێویستە ڕێگەپێدان بدەیت!</strong><br>
+            تکایە کلیک لە دوگمەی خوارەوە بکە و "Allow" هەڵبژێرە
+            <button id="requestPermBtn" class="permission-btn">📢 داواکردنی ڕێگەپێدان</button>
+        </div>
         
         <div class="input-group">
             <label>📝 ناونیشان:</label>
-            <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ، کاتی کۆبوونەوە، ...">
+            <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ، کاتی کۆبوونەوە">
         </div>
         
         <div class="input-group">
@@ -266,9 +223,9 @@
         </div>
         
         <div class="input-group">
-            <label>⏰ دیاریکردنی کات:</label>
+            <label>⏰ کات:</label>
             <div class="time-row">
-                <input type="time" id="alertTime" step="60">
+                <input type="time" id="alertTime">
                 <select id="ampm">
                     <option value="AM">پێش نیوەڕۆ</option>
                     <option value="PM">پاش نیوەڕۆ</option>
@@ -278,39 +235,27 @@
         
         <div class="options">
             <div class="option-item">
-                <label>🔆 ڕووناککردنەوەی شاشە</label>
-                <input type="checkbox" id="wakeScreen" checked>
+                <label>🔊 دەنگ</label>
+                <input type="checkbox" id="playSound" checked>
             </div>
             <div class="option-item">
                 <label>📳 هەژاندن</label>
                 <input type="checkbox" id="vibrate" checked>
             </div>
-            <div class="option-item">
-                <label>🔊 دەنگ</label>
-                <input type="checkbox" id="playSound" checked>
-            </div>
         </div>
         
-        <button onclick="scheduleAlert()">
-            📅 دیاریکردنی ئاگادارکردنەوە
-        </button>
+        <button onclick="scheduleAlert()">📅 دیاریکردنی ئاگادارکردنەوە</button>
         
-        <div class="quick-buttons">
-            <button class="quick-btn" onclick="quickTimeAlert(1, 30, 'پێشنیار', 'کاتی ١:٣٠ گەیشتە!')">
-                🕐 ١:٣٠
-            </button>
-            <button class="quick-btn" onclick="quickTimeAlert(2, 0, 'دووەم کات', 'کاتی ٢:٠٠ گەیشتە!')">
-                🕑 ٢:٠٠
-            </button>
-            <button class="quick-btn" onclick="quickTimeAlert(3, 30, 'سێیەم کات', 'کاتی ٣:٣٠ گەیشتە!')">
-                🕞 ٣:٣٠
-            </button>
-            <button class="quick-btn" onclick="quickTimeAlert(5, 0, 'پێنجەم کات', 'کاتی ٥:٠٠ گەیشتە!')">
-                🕔 ٥:٠٠
-            </button>
+        <div class="quick-times">
+            <button class="quick-time" onclick="setQuickTime(1, 30, 'یەکەم ئاگاداری', 'کاتی ١:٣٠ گەیشتە!')">🕐 ١:٣٠</button>
+            <button class="quick-time" onclick="setQuickTime(2, 0, 'دووەم ئاگاداری', 'کاتی ٢:٠٠ گەیشتە!')">🕑 ٢:٠٠</button>
+            <button class="quick-time" onclick="setQuickTime(3, 30, 'سێیەم ئاگاداری', 'کاتی ٣:٣٠ گەیشتە!')">🕞 ٣:٣٠</button>
+            <button class="quick-time" onclick="setQuickTime(5, 0, 'پێنجەم ئاگاداری', 'کاتی ٥:٠٠ گەیشتە!')">🕔 ٥:٠٠</button>
         </div>
         
-        <div class="scheduled-list" id="scheduledList">
+        <button class="test-btn" onclick="testNow()">🧪 تاقیکردنەوەی ئێستا (دەنگ و هەژاندن)</button>
+        
+        <div class="scheduled-list">
             <h3>📋 ئاگادارکردنەوە دیاریکراوەکان</h3>
             <div id="alertsList"></div>
         </div>
@@ -319,27 +264,209 @@
     </div>
     
     <script>
-        // هەڵگرتنی ئاگادارکردنەوەکان
         let scheduledAlerts = [];
+        let checkInterval;
         
-        // بارکردنی ئاگادارکردنەوەکان لە LocalStorage
+        // ڕێگەپێدان
+        function checkPermission() {
+            if (Notification.permission === "granted") {
+                document.getElementById('permissionBox').style.display = 'none';
+                return true;
+            } else if (Notification.permission === "denied") {
+                document.getElementById('permissionBox').style.display = 'block';
+                document.getElementById('permissionBox').innerHTML = '<strong>❌ ڕێگەپێدان ڕەت کرا!</strong><br>تکایە لە تەنظیماتەکانی براوسەر ڕێگەپێدان بدە';
+                return false;
+            } else {
+                document.getElementById('permissionBox').style.display = 'block';
+                return false;
+            }
+        }
+        
+        document.getElementById('requestPermBtn')?.addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                document.getElementById('permissionBox').style.display = 'none';
+                showStatus('✅ ڕێگەپێدان درا! ئێستا دەتوانیت ئاگادارکردنەوەکان بەکاربهێنیت', true);
+            }
+        });
+        
+        // تاقیکردنەوەی ئێستا
+        function testNow() {
+            const playSound = document.getElementById('playSound').checked;
+            const vibrateEnabled = document.getElementById('vibrate').checked;
+            
+            sendNotification('🧪 تاقیکردنەوە', 'ئەگەر دەنگ و هەژاندن دەبیست، ئەوا کاردەکات!', playSound, vibrateEnabled);
+            showStatus('🔔 تاقیکردنەوە نێردرا!', true);
+        }
+        
+        // دەنگ
+        function playSound() {
+            try {
+                const audio = new Audio('data:audio/wav;base64,U3RlYW0gU291bmQgRGF0YQ==');
+                audio.volume = 1;
+                audio.play().catch(e => {
+                    // ئەگەر نەکرد، بە Web Audio
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    oscillator.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    oscillator.frequency.value = 880;
+                    gain.gain.value = 0.3;
+                    oscillator.start();
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
+                    oscillator.stop(audioCtx.currentTime + 1);
+                    audioCtx.resume();
+                });
+            } catch(e) {
+                console.log('دەنگ نەکرا');
+            }
+        }
+        
+        // هەژاندن
+        function vibrate() {
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500, 200, 1000]);
+            }
+        }
+        
+        // ناردنی ئاگادارکردنەوە
+        function sendNotification(title, message, playSoundEnabled, vibrateEnabled) {
+            if (playSoundEnabled) {
+                playSound();
+            }
+            
+            if (vibrateEnabled) {
+                vibrate();
+            }
+            
+            if (Notification.permission === "granted") {
+                const options = {
+                    body: message,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+                    badge: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+                    requireInteraction: true,
+                    silent: !playSoundEnabled,
+                    vibrate: vibrateEnabled ? [200, 100, 200, 100, 200] : undefined
+                };
+                
+                const notification = new Notification(title, options);
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+                
+                return true;
+            }
+            return false;
+        }
+        
+        // دیاریکردنی کات
+        function scheduleAlert() {
+            if (Notification.permission !== "granted") {
+                showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
+                checkPermission();
+                return;
+            }
+            
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+            let time = document.getElementById('alertTime').value;
+            const ampm = document.getElementById('ampm').value;
+            const playSound = document.getElementById('playSound').checked;
+            const vibrateEnabled = document.getElementById('vibrate').checked;
+            
+            if (!title || !message) {
+                showStatus('تکایە ناونیشان و پەیام پڕ بکەرەوە!', false);
+                return;
+            }
+            
+            if (!time) {
+                showStatus('تکایە کات دیاری بکە!', false);
+                return;
+            }
+            
+            let [hours, minutes] = time.split(':');
+            hours = parseInt(hours);
+            
+            if (ampm === 'PM' && hours !== 12) hours += 12;
+            if (ampm === 'AM' && hours === 12) hours = 0;
+            
+            const now = new Date();
+            const alertTime = new Date();
+            alertTime.setHours(hours, minutes, 0, 0);
+            
+            if (alertTime <= now) {
+                alertTime.setDate(alertTime.getDate() + 1);
+            }
+            
+            const timeStr = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = alertTime.toLocaleDateString('ku');
+            
+            scheduledAlerts.push({
+                id: Date.now(),
+                title, message,
+                time: `${timeStr} - ${dateStr}`,
+                timestamp: alertTime.getTime(),
+                playSound, vibrate: vibrateEnabled
+            });
+            
+            saveAlerts();
+            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeStr} دیاری کرا!`, true);
+            
+            document.getElementById('title').value = '';
+            document.getElementById('message').value = '';
+            document.getElementById('alertTime').value = '';
+        }
+        
+        // کاتی خێرا
+        function setQuickTime(hour, minute, title, message) {
+            if (Notification.permission !== "granted") {
+                showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
+                checkPermission();
+                return;
+            }
+            
+            const now = new Date();
+            const alertTime = new Date();
+            alertTime.setHours(hour, minute, 0, 0);
+            
+            if (alertTime <= now) {
+                alertTime.setDate(alertTime.getDate() + 1);
+            }
+            
+            const timeStr = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = alertTime.toLocaleDateString('ku');
+            
+            scheduledAlerts.push({
+                id: Date.now(),
+                title, message,
+                time: `${timeStr} - ${dateStr}`,
+                timestamp: alertTime.getTime(),
+                playSound: true,
+                vibrate: true
+            });
+            
+            saveAlerts();
+            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeStr} دیاری کرا!`, true);
+        }
+        
+        // هەڵگرتن
+        function saveAlerts() {
+            localStorage.setItem('scheduledAlerts', JSON.stringify(scheduledAlerts));
+            updateList();
+        }
+        
         function loadAlerts() {
             const saved = localStorage.getItem('scheduledAlerts');
             if (saved) {
                 scheduledAlerts = JSON.parse(saved);
-                updateAlertsList();
-                startChecker();
+                updateList();
             }
         }
         
-        // هەڵگرتنی ئاگادارکردنەوەکان لە LocalStorage
-        function saveAlerts() {
-            localStorage.setItem('scheduledAlerts', JSON.stringify(scheduledAlerts));
-            updateAlertsList();
-        }
-        
-        // نوێکردنەوەی لیست
-        function updateAlertsList() {
+        function updateList() {
             const container = document.getElementById('alertsList');
             if (scheduledAlerts.length === 0) {
                 container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">هیچ ئاگادارکردنەوەیەک دیاری نەکراوە</div>';
@@ -354,237 +481,62 @@
                             <div class="scheduled-title">${alert.title}</div>
                             <div class="scheduled-time">${alert.time} - ${alert.message}</div>
                         </div>
-                        <button class="delete-btn" onclick="deleteAlert(${index})">🗑️ لابردن</button>
+                        <button class="delete-btn" onclick="deleteAlert(${index})">لابردن</button>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
         
-        // لابردنی ئاگادارکردنەوە
         function deleteAlert(index) {
             scheduledAlerts.splice(index, 1);
             saveAlerts();
             showStatus('ئاگادارکردنەوە لابرا', true);
         }
         
-        // نیشاندانی ستاتوس
-        function showStatus(message, isSuccess = true, isWarning = false) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            if (isWarning) {
-                statusDiv.className = 'status warning';
-            } else {
-                statusDiv.className = `status ${isSuccess ? 'success' : 'error'}`;
-            }
-            statusDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
+        function showStatus(msg, success) {
+            const status = document.getElementById('status');
+            status.textContent = msg;
+            status.className = `status ${success ? 'success' : 'error'}`;
+            status.style.display = 'block';
+            setTimeout(() => status.style.display = 'none', 3000);
         }
         
-        // دەنگ لێدان
-        function playBeep() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 880;
-                gainNode.gain.value = 0.5;
-                
-                oscillator.start();
-                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
-                oscillator.stop(audioContext.currentTime + 1);
-                
-                audioContext.resume();
-            } catch(e) {
-                console.log('دەنگ نەکرا');
-            }
-        }
-        
-        // هەژاندن
-        function vibratePhone() {
-            if (navigator.vibrate) {
-                navigator.vibrate([500, 200, 500, 200, 500]);
-            }
-        }
-        
-        // ناردنی ئاگادارکردنەوە
-        function sendNotification(title, message, playSound, vibrateEnabled) {
-            if (playSound) {
-                playBeep();
-            }
-            
-            if (vibrateEnabled && navigator.vibrate) {
-                vibratePhone();
-            }
-            
-            if (Notification.permission === "granted") {
-                const notification = new Notification(title, {
-                    body: message,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
-                    badge: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
-                    silent: !playSound,
-                    vibrate: vibrateEnabled ? [200, 100, 200, 100, 200] : undefined,
-                    requireInteraction: true,
-                    tag: 'important-notification'
-                });
-                
-                notification.onclick = function() {
-                    window.focus();
-                    notification.close();
-                };
-                
-                // ڕووناککردنەوەی شاشە
-                if (screen.keepAwake) {
-                    screen.keepAwake = true;
-                    setTimeout(() => {
-                        screen.keepAwake = false;
-                    }, 10000);
-                }
-            }
-        }
-        
-        // دیاریکردنی کات
-        function scheduleAlert() {
-            const title = document.getElementById('title').value;
-            const message = document.getElementById('message').value;
-            let time = document.getElementById('alertTime').value;
-            const ampm = document.getElementById('ampm').value;
-            const wakeScreen = document.getElementById('wakeScreen').checked;
-            const vibrateEnabled = document.getElementById('vibrate').checked;
-            const playSound = document.getElementById('playSound').checked;
-            
-            if (!title || !message) {
-                showStatus('تکایە ناونیشان و پەیام پڕ بکەرەوە!', false);
-                return;
-            }
-            
-            if (!time) {
-                showStatus('تکایە کات دیاری بکە!', false);
-                return;
-            }
-            
-            // گۆڕینی کات بۆ 24 کاتژمێری
-            let [hours, minutes] = time.split(':');
-            hours = parseInt(hours);
-            
-            if (ampm === 'PM' && hours !== 12) {
-                hours += 12;
-            } else if (ampm === 'AM' && hours === 12) {
-                hours = 0;
-            }
-            
-            const now = new Date();
-            const alertTime = new Date();
-            alertTime.setHours(hours, minutes, 0, 0);
-            
-            // ئەگەر کات تێپەڕیبوو، بۆ سبەینێ دیاری بکە
-            if (alertTime <= now) {
-                alertTime.setDate(alertTime.getDate() + 1);
-            }
-            
-            const timeString = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
-            const dateString = alertTime.toLocaleDateString('ku');
-            
-            const alertData = {
-                id: Date.now(),
-                title: title,
-                message: message,
-                time: `${timeString} - ${dateString}`,
-                timestamp: alertTime.getTime(),
-                wakeScreen: wakeScreen,
-                vibrate: vibrateEnabled,
-                playSound: playSound
-            };
-            
-            scheduledAlerts.push(alertData);
-            saveAlerts();
-            
-            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeString} دیاری کرا!`);
-            
-            // خاوێنکردنەوە
-            document.getElementById('title').value = '';
-            document.getElementById('message').value = '';
-            document.getElementById('alertTime').value = '';
-        }
-        
-        // ئاگادارکردنەوەی خێرا بە کات
-        function quickTimeAlert(hour, minute, title, message) {
-            const now = new Date();
-            const alertTime = new Date();
-            alertTime.setHours(hour, minute, 0, 0);
-            
-            if (alertTime <= now) {
-                alertTime.setDate(alertTime.getDate() + 1);
-            }
-            
-            const timeString = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
-            const dateString = alertTime.toLocaleDateString('ku');
-            
-            const alertData = {
-                id: Date.now(),
-                title: title,
-                message: message,
-                time: `${timeString} - ${dateString}`,
-                timestamp: alertTime.getTime(),
-                wakeScreen: true,
-                vibrate: true,
-                playSound: true
-            };
-            
-            scheduledAlerts.push(alertData);
-            saveAlerts();
-            
-            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeString} دیاری کرا!`);
-        }
-        
-        // پشکنینی کاتەکان
-        let checkerInterval;
-        
+        // پشکنینی کات (هەر چرکەیەک)
         function startChecker() {
-            if (checkerInterval) clearInterval(checkerInterval);
+            if (checkInterval) clearInterval(checkInterval);
             
-            checkerInterval = setInterval(() => {
+            checkInterval = setInterval(() => {
                 const now = Date.now();
-                const alertsToTrigger = [];
+                const toTrigger = [];
                 
-                scheduledAlerts.forEach((alert, index) => {
+                scheduledAlerts.forEach((alert, idx) => {
                     if (alert.timestamp <= now) {
-                        alertsToTrigger.push({alert, index});
+                        toTrigger.push({alert, idx});
                     }
                 });
                 
-                // ڕیزکردن بە پێچەوانە بۆ لابردنی دروست
-                for (let i = alertsToTrigger.length - 1; i >= 0; i--) {
-                    const {alert, index} = alertsToTrigger[i];
+                for (let i = toTrigger.length - 1; i >= 0; i--) {
+                    const {alert, idx} = toTrigger[i];
                     sendNotification(alert.title, alert.message, alert.playSound, alert.vibrate);
-                    scheduledAlerts.splice(index, 1);
+                    scheduledAlerts.splice(idx, 1);
                 }
                 
-                if (alertsToTrigger.length > 0) {
+                if (toTrigger.length > 0) {
                     saveAlerts();
-                    showStatus(`🔔 ${alertsToTrigger.length} ئاگادارکردنەوە نێردرا!`, true);
+                    showStatus(`🔔 ${toTrigger.length} ئاگادارکردنەوە نێردرا!`, true);
                 }
-            }, 1000); // هەر چرکەیەک پشکنین بکە
+            }, 1000);
         }
         
-        // داواکردنی ڕێگەپێدان
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
-        
-        // بارکردن
+        // دەستپێکردن
+        checkPermission();
         loadAlerts();
+        startChecker();
         
-        // ئەگەر مۆبایل داخرا، هێشتا کاربکات
+        // ئاگادارکردنەوە کە پەڕە نەداخیت
         window.addEventListener('beforeunload', () => {
-            if (checkerInterval) clearInterval(checkerInterval);
+            if (checkInterval) clearInterval(checkInterval);
         });
     </script>
 </body>
