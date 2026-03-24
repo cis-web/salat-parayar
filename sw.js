@@ -1,22 +1,39 @@
-self.addEventListener("notificationclick",function(e){
+// Service Worker بۆ ئاگادارکردنەوەکان
 
-e.notification.close()
+self.addEventListener('install', function(event) {
+    console.log('Service Worker نصب کرا');
+    self.skipWaiting();
+});
 
-e.waitUntil(
+self.addEventListener('activate', function(event) {
+    console.log('Service Worker چالاک کرا');
+    event.waitUntil(clients.claim());
+});
 
-clients.matchAll({type:"window"}).then(clientsArr=>{
+// کۆنتڕۆڵکردنی کلیکی ئاگادارکردنەوە
+self.addEventListener('notificationclick', function(event) {
+    console.log('ئاگادارکردنەوە کرتە کرا');
+    event.notification.close();
+    
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function(clientList) {
+                // ئەگەر پەنجەرەیەکی کراوە هەیە، بیخەرە پێشەوە
+                for (var i = 0; i < clientList.length; i++) {
+                    var client = clientList[i];
+                    if (client.url && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // ئەگەر نەبوو، پەنجەرەیەکی نوێ بکەرەوە
+                if (clients.openWindow) {
+                    return clients.openWindow('/');
+                }
+            })
+    );
+});
 
-for(let c of clientsArr){
-
-if(c.url && "focus" in c) return c.focus()
-
-}
-
-if(clients.openWindow)
-return clients.openWindow("/")
-
-})
-
-)
-
-})
+// ئاگادارکردنەوە کاتێک وەردەگیرێت
+self.addEventListener('notification', function(event) {
+    console.log('ئاگادارکردنەوە وەرگیرا');
+});
