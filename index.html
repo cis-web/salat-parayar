@@ -1,800 +1,591 @@
 <!DOCTYPE html>
-<html lang="ckb" dir="rtl">
+<html lang="ku">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="کاتی بانگ">
-<meta name="theme-color" content="#1a3a2a">
-<title>کاتی بانگ - یادەوەری نوێژ</title>
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi2qnYp9iq2bYg2qfYp9mG2KciLCJzaG9ydF9uYW1lIjoi2qnYp9iq2bYg2qfYp9mG2KciLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFhM2EyYSIsInRoZW1lX2NvbG9yIjoiIzFhM2EyYSJ9">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --green-dark: #0d2818;
-    --green-mid: #1a3a2a;
-    --green-light: #2d5a3d;
-    --green-accent: #4a8c5c;
-    --gold: #c9a227;
-    --gold-light: #e8c84a;
-    --cream: #f5f0e8;
-    --text-light: #e8dcc8;
-    --text-muted: #a89880;
-    --card-bg: rgba(255,255,255,0.07);
-    --border: rgba(201,162,39,0.3);
-  }
-
-  body {
-    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-    background: linear-gradient(160deg, var(--green-dark) 0%, var(--green-mid) 50%, #0a1f14 100%);
-    min-height: 100vh;
-    color: var(--text-light);
-    direction: rtl;
-    text-align: right;
-    padding-bottom: 40px;
-  }
-
-  /* Geometric pattern overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: 
-      repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,162,39,0.03) 40px, rgba(201,162,39,0.03) 41px),
-      repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(201,162,39,0.03) 40px, rgba(201,162,39,0.03) 41px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px; }
-
-  /* Header */
-  .header {
-    text-align: center;
-    padding: 32px 0 20px;
-    position: relative;
-  }
-
-  .header::after {
-    content: '';
-    display: block;
-    width: 80px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 12px auto 0;
-  }
-
-  .header h1 {
-    font-size: 28px;
-    color: var(--gold-light);
-    letter-spacing: 1px;
-    font-weight: 700;
-  }
-
-  .header p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
-
-  /* Mosque dome SVG decorative */
-  .mosque-icon {
-    width: 60px;
-    height: 50px;
-    margin: 0 auto 12px;
-    display: block;
-  }
-
-  /* Clock display */
-  .clock-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 20px;
-    text-align: center;
-    margin: 16px 0;
-    backdrop-filter: blur(10px);
-  }
-
-  .current-time {
-    font-size: 52px;
-    font-weight: 700;
-    color: var(--gold-light);
-    letter-spacing: 2px;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .current-date {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
-
-  .next-prayer {
-    margin-top: 12px;
-    padding: 10px 16px;
-    background: rgba(201,162,39,0.12);
-    border: 1px solid rgba(201,162,39,0.25);
-    border-radius: 12px;
-    display: inline-block;
-    font-size: 14px;
-    color: var(--gold);
-  }
-
-  .next-prayer span { color: var(--gold-light); font-weight: 700; }
-
-  /* Prayer Cards */
-  .prayers-section { margin-top: 8px; }
-
-  .section-title {
-    font-size: 15px;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    padding-right: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 14px;
-    background: var(--gold);
-    border-radius: 2px;
-  }
-
-  .prayer-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .prayer-card::before {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--gold);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .prayer-card:hover { background: rgba(255,255,255,0.1); }
-  .prayer-card:hover::before { opacity: 1; }
-
-  .prayer-card.active {
-    background: rgba(201,162,39,0.12);
-    border-color: rgba(201,162,39,0.5);
-  }
-
-  .prayer-card.active::before { opacity: 1; }
-
-  .prayer-card.passed {
-    opacity: 0.5;
-  }
-
-  .prayer-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: rgba(201,162,39,0.15);
-    border: 1px solid rgba(201,162,39,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 20px;
-  }
-
-  .prayer-info { flex: 1; min-width: 0; }
-
-  .prayer-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--cream);
-  }
-
-  .prayer-arabic {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 1px;
-  }
-
-  .prayer-time-section { text-align: left; }
-
-  .prayer-time-display {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--gold-light);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .prayer-status {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    text-align: center;
-  }
-
-  .time-edit {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .time-input {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--gold-light);
-    font-size: 18px;
-    font-weight: 700;
-    width: 100px;
-    text-align: center;
-    padding: 4px 8px;
-    outline: none;
-    direction: ltr;
-  }
-
-  .time-input:focus {
-    border-color: var(--gold);
-    background: rgba(201,162,39,0.1);
-  }
-
-  /* Toggle switch */
-  .toggle-switch {
-    position: relative;
-    width: 46px;
-    height: 26px;
-    flex-shrink: 0;
-  }
-
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-  }
-
-  .toggle-slider {
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0.15);
-    border-radius: 13px;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .toggle-slider::before {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: var(--text-muted);
-    border-radius: 50%;
-    bottom: 3px;
-    left: 3px;
-    transition: 0.3s;
-  }
-
-  .toggle-switch input:checked + .toggle-slider {
-    background: rgba(201,162,39,0.4);
-    border-color: var(--gold);
-  }
-
-  .toggle-switch input:checked + .toggle-slider::before {
-    transform: translateX(20px);
-    background: var(--gold-light);
-  }
-
-  /* Edit button */
-  .edit-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-
-  .edit-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .edit-btn.save { border-color: var(--gold); color: var(--gold); }
-
-  /* Notification permission banner */
-  .notif-banner {
-    background: rgba(201,162,39,0.1);
-    border: 1px solid rgba(201,162,39,0.3);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin: 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .notif-banner .icon { font-size: 24px; flex-shrink: 0; }
-
-  .notif-banner-text { flex: 1; }
-  .notif-banner-text p { font-size: 13px; color: var(--text-light); }
-  .notif-banner-text small { font-size: 11px; color: var(--text-muted); }
-
-  .allow-btn {
-    background: var(--gold);
-    color: var(--green-dark);
-    border: none;
-    border-radius: 10px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: inherit;
-    transition: background 0.2s;
-  }
-
-  .allow-btn:hover { background: var(--gold-light); }
-
-  /* Adhan sound */
-  .sound-section {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin: 12px 0;
-  }
-
-  .sound-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .sound-label { font-size: 15px; color: var(--text-light); }
-  .sound-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-  select.sound-select {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid var(--border);
-    color: var(--text-light);
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 13px;
-    outline: none;
-    font-family: inherit;
-    cursor: pointer;
-  }
-
-  select.sound-select option { background: var(--green-dark); }
-
-  /* Countdown */
-  .countdown-bar {
-    background: rgba(201,162,39,0.08);
-    border: 1px solid rgba(201,162,39,0.2);
-    border-radius: 12px;
-    padding: 12px 16px;
-    text-align: center;
-    margin: 4px 0 16px;
-  }
-
-  .countdown-bar .label { font-size: 12px; color: var(--text-muted); }
-
-  .countdown-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gold-light);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 2px;
-    display: block;
-    margin-top: 2px;
-  }
-
-  /* Install banner */
-  .install-banner {
-    background: rgba(45,90,61,0.5);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin: 12px 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-align: center;
-    line-height: 1.6;
-  }
-
-  .install-banner strong { color: var(--gold); }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--gold-light);
-    display: inline-block;
-    margin-left: 6px;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .passed-line {
-    text-decoration: line-through;
-    text-decoration-color: var(--text-muted);
-  }
-
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 16px 0;
-  }
-
-  /* RTL time input fix */
-  input[type="time"] { direction: ltr; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ئەپی ئاگادارکردنەوە بە کات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .time-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .time-row input {
+            flex: 1;
+        }
+        
+        .time-row select {
+            width: auto;
+            min-width: 80px;
+        }
+        
+        .options {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .option-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .quick-btn {
+            background: #e0e0e0;
+            color: #333;
+            padding: 10px;
+            font-size: 13px;
+            margin-top: 0;
+        }
+        
+        .scheduled-list {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .scheduled-list h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .scheduled-item {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .scheduled-info {
+            flex: 1;
+        }
+        
+        .scheduled-title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .scheduled-time {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+            margin: 0;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .quick-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-
-  <!-- Header -->
-  <div class="header">
-    <svg class="mosque-icon" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M30 2 C30 2, 22 10, 22 18 L38 18 C38 10 30 2 30 2Z" fill="#c9a227" opacity="0.9"/>
-      <rect x="10" y="18" width="40" height="22" rx="3" fill="#c9a227" opacity="0.6"/>
-      <rect x="15" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
-      <rect x="26" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
-      <rect x="37" y="22" width="8" height="18" rx="2" fill="#1a3a2a"/>
-      <rect x="5" y="38" width="50" height="4" rx="2" fill="#c9a227" opacity="0.5"/>
-      <line x1="30" y1="0" x2="30" y2="4" stroke="#c9a227" stroke-width="1.5"/>
-      <circle cx="30" cy="1" r="1.5" fill="#c9a227"/>
-    </svg>
-    <h1>کاتی بانگ</h1>
-    <p>یادەوەری نوێژی ڕۆژانە</p>
-  </div>
-
-  <!-- Current Time -->
-  <div class="clock-card">
-    <div class="current-time" id="currentTime">--:--:--</div>
-    <div class="current-date" id="currentDate"></div>
-    <div style="margin-top: 10px;">
-      <div class="next-prayer" id="nextPrayerInfo">⏳ چاوەڕوانی...</div>
-    </div>
-  </div>
-
-  <!-- Countdown to next prayer -->
-  <div class="countdown-bar">
-    <div class="label">کات تا نوێژی داهاتوو</div>
-    <span class="countdown-value" id="countdown">--:--:--</span>
-  </div>
-
-  <!-- Notification Permission -->
-  <div class="notif-banner" id="notifBanner" style="display:none">
-    <div class="icon">🔔</div>
-    <div class="notif-banner-text">
-      <p>ڕێگەپێدان بدە بۆ ئاگادارکردنەوە</p>
-      <small>پێویستە بۆ کاتی بانگ ئاگادارت بکات</small>
-    </div>
-    <button class="allow-btn" onclick="requestNotif()">ڕێگەدان</button>
-  </div>
-
-  <!-- Sound Setting -->
-  <div class="sound-section">
-    <div class="sound-row">
-      <div>
-        <div class="sound-label">🔊 دەنگی بانگ</div>
-        <div class="sound-sub">کاتی ئاگادارکردنەوە</div>
-      </div>
-      <select class="sound-select" id="soundType">
-        <option value="adhan">بانگی ئیسلامی</option>
-        <option value="beep">دەنگی سادە</option>
-        <option value="silent">بێدەنگ (ویبرەیشن)</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Prayer Times -->
-  <div class="prayers-section">
-    <div class="section-title">کاتەکانی نوێژ — دیاریکردن و چالاककردن</div>
-
-    <!-- Prayers will be rendered here -->
-    <div id="prayersList"></div>
-  </div>
-
-  <!-- Install Guide -->
-  <div class="install-banner">
-    <strong>📱 نصبکردنی ئەپ لەسەر موبایل</strong><br>
-    <span style="font-size:12px">
-      ئەندرۆید: مینوی گەڕۆکە ← "زیادکردن بۆ سکرینی سەرەکی"<br>
-      ئایفۆن: دوگمەی Share ← "Add to Home Screen"
-    </span>
-  </div>
-
-  <div class="divider"></div>
-  <div style="text-align:center; font-size:11px; color:var(--text-muted); padding-bottom:20px;">
-    <span class="status-dot"></span>
-    کاتەکانت پاراستراون لەسەر موبایلەکەت
-  </div>
-
-</div>
-
-<script>
-const PRAYERS = [
-  { id: 'fajr',   name: 'بەیانی',   arabic: 'الفجر',  icon: '🌙', defaultTime: '05:00' },
-  { id: 'dhuhr',  name: 'نیوەرۆ',   arabic: 'الظهر',  icon: '☀️', defaultTime: '12:30' },
-  { id: 'asr',    name: 'عەسر',     arabic: 'العصر',  icon: '🌤️', defaultTime: '15:45' },
-  { id: 'maghrib',name: 'ئیوارە',   arabic: 'المغرب', icon: '🌅', defaultTime: '18:15' },
-  { id: 'isha',   name: 'عیشا',     arabic: 'العشاء', icon: '🌟', defaultTime: '19:45' },
-];
-
-function loadData() {
-  try {
-    const saved = localStorage.getItem('prayerTimes');
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
-  const d = {};
-  PRAYERS.forEach(p => {
-    d[p.id] = { time: p.defaultTime, enabled: true };
-  });
-  return d;
-}
-
-function saveData(data) {
-  try { localStorage.setItem('prayerTimes', JSON.stringify(data)); } catch(e) {}
-}
-
-let data = loadData();
-let editingId = null;
-
-function renderPrayers() {
-  const now = new Date();
-  const nowMins = now.getHours() * 60 + now.getMinutes();
-  const list = document.getElementById('prayersList');
-  list.innerHTML = '';
-
-  PRAYERS.forEach(p => {
-    const pd = data[p.id];
-    const [h, m] = pd.time.split(':').map(Number);
-    const pMins = h * 60 + m;
-    const passed = pMins < nowMins;
-    const isNext = getNextPrayer() && getNextPrayer().id === p.id;
-
-    const card = document.createElement('div');
-    card.className = 'prayer-card' + (isNext ? ' active' : '') + (passed && !isNext ? ' passed' : '');
-
-    card.innerHTML = `
-      <div class="prayer-icon">${p.icon}</div>
-      <div class="prayer-info">
-        <div class="prayer-name ${passed && !isNext ? 'passed-line' : ''}">${p.name}</div>
-        <div class="prayer-arabic">${p.arabic}</div>
-      </div>
-      <div class="prayer-time-section">
-        ${editingId === p.id
-          ? `<input type="time" class="time-input" id="timeInput_${p.id}" value="${pd.time}">`
-          : `<div class="prayer-time-display">${pd.time}</div>`
-        }
-        <div style="display:flex; gap:8px; margin-top:4px; align-items:center; justify-content:center;">
-          ${editingId === p.id
-            ? `<button class="edit-btn save" onclick="saveTime('${p.id}')">پاراستن</button>`
-            : `<button class="edit-btn" onclick="startEdit('${p.id}')">گۆڕین</button>`
-          }
-          <label class="toggle-switch">
-            <input type="checkbox" ${pd.enabled ? 'checked' : ''} onchange="togglePrayer('${p.id}', this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
+    <div class="container">
+        <h1>⏰ ئەپی ئاگادارکردنەوە</h1>
+        <div class="subtitle">کات دیاری بکە، ئاگادار دەبیتەوە!</div>
+        
+        <div class="input-group">
+            <label>📝 ناونیشان:</label>
+            <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ، کاتی کۆبوونەوە، ...">
         </div>
-        ${passed && !isNext ? '<div class="prayer-status">تێپەربوو</div>' : ''}
-        ${isNext ? '<div class="prayer-status" style="color:var(--gold)">داهاتوو ⬆</div>' : ''}
-      </div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function startEdit(id) {
-  editingId = id;
-  renderPrayers();
-  setTimeout(() => {
-    const inp = document.getElementById('timeInput_' + id);
-    if (inp) inp.focus();
-  }, 50);
-}
-
-function saveTime(id) {
-  const inp = document.getElementById('timeInput_' + id);
-  if (inp && inp.value) {
-    data[id].time = inp.value;
-    saveData(data);
-  }
-  editingId = null;
-  renderPrayers();
-  updateNextPrayer();
-}
-
-function togglePrayer(id, checked) {
-  data[id].enabled = checked;
-  saveData(data);
-}
-
-function getNextPrayer() {
-  const now = new Date();
-  const nowMins = now.getHours() * 60 + now.getMinutes();
-  for (const p of PRAYERS) {
-    if (!data[p.id].enabled) continue;
-    const [h, m] = data[p.id].time.split(':').map(Number);
-    if (h * 60 + m > nowMins) return { ...p, time: data[p.id].time };
-  }
-  return PRAYERS.find(p => data[p.id].enabled)
-    ? { ...PRAYERS.find(p => data[p.id].enabled), time: data[PRAYERS.find(p => data[p.id].enabled).id].time }
-    : null;
-}
-
-function updateNextPrayer() {
-  const next = getNextPrayer();
-  const el = document.getElementById('nextPrayerInfo');
-  if (!next) { el.innerHTML = 'هیچ نوێژێک چالاک نیە'; return; }
-  el.innerHTML = `داهاتوو: <span>${next.name} — ${next.time}</span>`;
-}
-
-function updateCountdown() {
-  const now = new Date();
-  const nowMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
-  const el = document.getElementById('countdown');
-  const next = getNextPrayer();
-  if (!next) { el.textContent = '--:--:--'; return; }
-  const [h, m] = next.time.split(':').map(Number);
-  let diffMins = h * 60 + m - nowMins;
-  if (diffMins < 0) diffMins += 24 * 60;
-  const hours = Math.floor(diffMins / 60);
-  const mins = Math.floor(diffMins % 60);
-  const secs = Math.floor((diffMins % 1) * 60);
-  el.textContent = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-}
-
-function updateClock() {
-  const now = new Date();
-  document.getElementById('currentTime').textContent = now.toLocaleTimeString('ckb', { hour12: false });
-  const days = ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'];
-  const months = ['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەمموز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
-  document.getElementById('currentDate').textContent = `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-}
-
-// Notification
-function requestNotif() {
-  if (!('Notification' in window)) { alert('گەڕۆکەکەت پشتیوانی ئاگادارکردنەوە ناکات'); return; }
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') {
-      document.getElementById('notifBanner').style.display = 'none';
-      scheduleNotifications();
-    }
-  });
-}
-
-function scheduleNotifications() {
-  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-  const now = new Date();
-  PRAYERS.forEach(p => {
-    if (!data[p.id].enabled) return;
-    const [h, m] = data[p.id].time.split(':').map(Number);
-    const pTime = new Date();
-    pTime.setHours(h, m, 0, 0);
-    const diff = pTime - now;
-    if (diff > 0 && diff < 24 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        new Notification('⏰ کاتی ' + p.name, {
-          body: `کاتی نوێژی ${p.name} گەیشتە — ${p.time}`,
-          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>',
-          badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>'
+        
+        <div class="input-group">
+            <label>💬 پەیام:</label>
+            <textarea id="message" placeholder="پەیامی ئاگادارکردنەوە"></textarea>
+        </div>
+        
+        <div class="input-group">
+            <label>⏰ دیاریکردنی کات:</label>
+            <div class="time-row">
+                <input type="time" id="alertTime" step="60">
+                <select id="ampm">
+                    <option value="AM">پێش نیوەڕۆ</option>
+                    <option value="PM">پاش نیوەڕۆ</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="options">
+            <div class="option-item">
+                <label>🔆 ڕووناککردنەوەی شاشە</label>
+                <input type="checkbox" id="wakeScreen" checked>
+            </div>
+            <div class="option-item">
+                <label>📳 هەژاندن</label>
+                <input type="checkbox" id="vibrate" checked>
+            </div>
+            <div class="option-item">
+                <label>🔊 دەنگ</label>
+                <input type="checkbox" id="playSound" checked>
+            </div>
+        </div>
+        
+        <button onclick="scheduleAlert()">
+            📅 دیاریکردنی ئاگادارکردنەوە
+        </button>
+        
+        <div class="quick-buttons">
+            <button class="quick-btn" onclick="quickTimeAlert(1, 30, 'پێشنیار', 'کاتی ١:٣٠ گەیشتە!')">
+                🕐 ١:٣٠
+            </button>
+            <button class="quick-btn" onclick="quickTimeAlert(2, 0, 'دووەم کات', 'کاتی ٢:٠٠ گەیشتە!')">
+                🕑 ٢:٠٠
+            </button>
+            <button class="quick-btn" onclick="quickTimeAlert(3, 30, 'سێیەم کات', 'کاتی ٣:٣٠ گەیشتە!')">
+                🕞 ٣:٣٠
+            </button>
+            <button class="quick-btn" onclick="quickTimeAlert(5, 0, 'پێنجەم کات', 'کاتی ٥:٠٠ گەیشتە!')">
+                🕔 ٥:٠٠
+            </button>
+        </div>
+        
+        <div class="scheduled-list" id="scheduledList">
+            <h3>📋 ئاگادارکردنەوە دیاریکراوەکان</h3>
+            <div id="alertsList"></div>
+        </div>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        // هەڵگرتنی ئاگادارکردنەوەکان
+        let scheduledAlerts = [];
+        
+        // بارکردنی ئاگادارکردنەوەکان لە LocalStorage
+        function loadAlerts() {
+            const saved = localStorage.getItem('scheduledAlerts');
+            if (saved) {
+                scheduledAlerts = JSON.parse(saved);
+                updateAlertsList();
+                startChecker();
+            }
+        }
+        
+        // هەڵگرتنی ئاگادارکردنەوەکان لە LocalStorage
+        function saveAlerts() {
+            localStorage.setItem('scheduledAlerts', JSON.stringify(scheduledAlerts));
+            updateAlertsList();
+        }
+        
+        // نوێکردنەوەی لیست
+        function updateAlertsList() {
+            const container = document.getElementById('alertsList');
+            if (scheduledAlerts.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">هیچ ئاگادارکردنەوەیەک دیاری نەکراوە</div>';
+                return;
+            }
+            
+            let html = '';
+            scheduledAlerts.forEach((alert, index) => {
+                html += `
+                    <div class="scheduled-item">
+                        <div class="scheduled-info">
+                            <div class="scheduled-title">${alert.title}</div>
+                            <div class="scheduled-time">${alert.time} - ${alert.message}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteAlert(${index})">🗑️ لابردن</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        // لابردنی ئاگادارکردنەوە
+        function deleteAlert(index) {
+            scheduledAlerts.splice(index, 1);
+            saveAlerts();
+            showStatus('ئاگادارکردنەوە لابرا', true);
+        }
+        
+        // نیشاندانی ستاتوس
+        function showStatus(message, isSuccess = true, isWarning = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            if (isWarning) {
+                statusDiv.className = 'status warning';
+            } else {
+                statusDiv.className = `status ${isSuccess ? 'success' : 'error'}`;
+            }
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // دەنگ لێدان
+        function playBeep() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 880;
+                gainNode.gain.value = 0.5;
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+                oscillator.stop(audioContext.currentTime + 1);
+                
+                audioContext.resume();
+            } catch(e) {
+                console.log('دەنگ نەکرا');
+            }
+        }
+        
+        // هەژاندن
+        function vibratePhone() {
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500, 200, 500]);
+            }
+        }
+        
+        // ناردنی ئاگادارکردنەوە
+        function sendNotification(title, message, playSound, vibrateEnabled) {
+            if (playSound) {
+                playBeep();
+            }
+            
+            if (vibrateEnabled && navigator.vibrate) {
+                vibratePhone();
+            }
+            
+            if (Notification.permission === "granted") {
+                const notification = new Notification(title, {
+                    body: message,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+                    badge: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+                    silent: !playSound,
+                    vibrate: vibrateEnabled ? [200, 100, 200, 100, 200] : undefined,
+                    requireInteraction: true,
+                    tag: 'important-notification'
+                });
+                
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                };
+                
+                // ڕووناککردنەوەی شاشە
+                if (screen.keepAwake) {
+                    screen.keepAwake = true;
+                    setTimeout(() => {
+                        screen.keepAwake = false;
+                    }, 10000);
+                }
+            }
+        }
+        
+        // دیاریکردنی کات
+        function scheduleAlert() {
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+            let time = document.getElementById('alertTime').value;
+            const ampm = document.getElementById('ampm').value;
+            const wakeScreen = document.getElementById('wakeScreen').checked;
+            const vibrateEnabled = document.getElementById('vibrate').checked;
+            const playSound = document.getElementById('playSound').checked;
+            
+            if (!title || !message) {
+                showStatus('تکایە ناونیشان و پەیام پڕ بکەرەوە!', false);
+                return;
+            }
+            
+            if (!time) {
+                showStatus('تکایە کات دیاری بکە!', false);
+                return;
+            }
+            
+            // گۆڕینی کات بۆ 24 کاتژمێری
+            let [hours, minutes] = time.split(':');
+            hours = parseInt(hours);
+            
+            if (ampm === 'PM' && hours !== 12) {
+                hours += 12;
+            } else if (ampm === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            
+            const now = new Date();
+            const alertTime = new Date();
+            alertTime.setHours(hours, minutes, 0, 0);
+            
+            // ئەگەر کات تێپەڕیبوو، بۆ سبەینێ دیاری بکە
+            if (alertTime <= now) {
+                alertTime.setDate(alertTime.getDate() + 1);
+            }
+            
+            const timeString = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
+            const dateString = alertTime.toLocaleDateString('ku');
+            
+            const alertData = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                time: `${timeString} - ${dateString}`,
+                timestamp: alertTime.getTime(),
+                wakeScreen: wakeScreen,
+                vibrate: vibrateEnabled,
+                playSound: playSound
+            };
+            
+            scheduledAlerts.push(alertData);
+            saveAlerts();
+            
+            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeString} دیاری کرا!`);
+            
+            // خاوێنکردنەوە
+            document.getElementById('title').value = '';
+            document.getElementById('message').value = '';
+            document.getElementById('alertTime').value = '';
+        }
+        
+        // ئاگادارکردنەوەی خێرا بە کات
+        function quickTimeAlert(hour, minute, title, message) {
+            const now = new Date();
+            const alertTime = new Date();
+            alertTime.setHours(hour, minute, 0, 0);
+            
+            if (alertTime <= now) {
+                alertTime.setDate(alertTime.getDate() + 1);
+            }
+            
+            const timeString = alertTime.toLocaleTimeString('ku', { hour: '2-digit', minute: '2-digit' });
+            const dateString = alertTime.toLocaleDateString('ku');
+            
+            const alertData = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                time: `${timeString} - ${dateString}`,
+                timestamp: alertTime.getTime(),
+                wakeScreen: true,
+                vibrate: true,
+                playSound: true
+            };
+            
+            scheduledAlerts.push(alertData);
+            saveAlerts();
+            
+            showStatus(`✅ ئاگادارکردنەوە بۆ کاتی ${timeString} دیاری کرا!`);
+        }
+        
+        // پشکنینی کاتەکان
+        let checkerInterval;
+        
+        function startChecker() {
+            if (checkerInterval) clearInterval(checkerInterval);
+            
+            checkerInterval = setInterval(() => {
+                const now = Date.now();
+                const alertsToTrigger = [];
+                
+                scheduledAlerts.forEach((alert, index) => {
+                    if (alert.timestamp <= now) {
+                        alertsToTrigger.push({alert, index});
+                    }
+                });
+                
+                // ڕیزکردن بە پێچەوانە بۆ لابردنی دروست
+                for (let i = alertsToTrigger.length - 1; i >= 0; i--) {
+                    const {alert, index} = alertsToTrigger[i];
+                    sendNotification(alert.title, alert.message, alert.playSound, alert.vibrate);
+                    scheduledAlerts.splice(index, 1);
+                }
+                
+                if (alertsToTrigger.length > 0) {
+                    saveAlerts();
+                    showStatus(`🔔 ${alertsToTrigger.length} ئاگادارکردنەوە نێردرا!`, true);
+                }
+            }, 1000); // هەر چرکەیەک پشکنین بکە
+        }
+        
+        // داواکردنی ڕێگەپێدان
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+        
+        // بارکردن
+        loadAlerts();
+        
+        // ئەگەر مۆبایل داخرا، هێشتا کاربکات
+        window.addEventListener('beforeunload', () => {
+            if (checkerInterval) clearInterval(checkerInterval);
         });
-      }, diff);
-    }
-  });
-}
-
-function checkPrayerTime() {
-  const now = new Date();
-  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-  if (s !== 0) return;
-  PRAYERS.forEach(p => {
-    if (!data[p.id].enabled) return;
-    const [ph, pm] = data[p.id].time.split(':').map(Number);
-    if (ph === h && pm === m) {
-      if (Notification.permission === 'granted') {
-        new Notification('⏰ کاتی ' + p.name, {
-          body: `کاتی نوێژی ${p.name} گەیشتە — ${p.time}`,
-          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>'
-        });
-      }
-      playAdhan();
-    }
-  });
-}
-
-function playAdhan() {
-  const type = document.getElementById('soundType').value;
-  if (type === 'silent') return;
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (type === 'beep') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.5);
-    } else {
-      // Adhan-like tone sequence
-      const notes = [440, 495, 528, 495, 440, 415, 440];
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = freq;
-        osc.type = 'sine';
-        const t = ctx.currentTime + i * 0.5;
-        gain.gain.setValueAtTime(0.25, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-        osc.start(t); osc.stop(t + 0.45);
-      });
-    }
-  } catch(e) {}
-}
-
-// Init
-if ('Notification' in window && Notification.permission === 'default') {
-  document.getElementById('notifBanner').style.display = 'flex';
-} else if ('Notification' in window && Notification.permission === 'granted') {
-  scheduleNotifications();
-}
-
-renderPrayers();
-updateNextPrayer();
-updateClock();
-updateCountdown();
-
-setInterval(() => {
-  updateClock();
-  updateCountdown();
-  checkPrayerTime();
-}, 1000);
-
-setInterval(renderPrayers, 60000);
-setInterval(updateNextPrayer, 60000);
-
-// Service Worker for background support
-if ('serviceWorker' in navigator) {
-  const swCode = `
-    self.addEventListener('install', e => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response(''))));
-  `;
-  const blob = new Blob([swCode], {type: 'application/javascript'});
-  const url = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(url).catch(() => {});
-}
-</script>
+    </script>
 </body>
 </html>
