@@ -1,10 +1,11 @@
 {
     "name": "Alarm App Pro",
     "short_name": "Alarm",
-    "start_url": "index.html",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#667eea",
     "theme_color": "#667eea",
+    "scope": "/",
     "icons": [
         {
             "src": "https://cdn-icons-png.flaticon.com/512/190/190411.png",
