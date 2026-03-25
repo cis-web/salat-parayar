@@ -1,7 +1,4 @@
-// Service Worker بۆ ئاگادارکردنەوەکان
-
-const CACHE_NAME = 'alarm-app-v1';
-
+// Service Worker
 self.addEventListener('install', function(event) {
     console.log('Service Worker نصب کرا');
     self.skipWaiting();
@@ -13,9 +10,7 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('notificationclick', function(event) {
-    console.log('ئاگادارکردنەوە کرتە کرا');
     event.notification.close();
-    
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then(function(clientList) {
