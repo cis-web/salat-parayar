@@ -2,672 +2,1130 @@
 <html lang="ku">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alarm App Pro</title>
-<meta name="theme-color" content="#667eea">
-<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0f1a">
+<link rel="manifest" href="./manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+  --bg: #0f0f1a;
+  --surface: #1a1a2e;
+  --surface2: #16213e;
+  --accent: #e94560;
+  --accent2: #0f3460;
+  --accent3: #533483;
+  --text: #e0e0f0;
+  --text-dim: #888aaa;
+  --success: #00d68f;
+  --warning: #ffb347;
+  --mono: 'Space Mono', monospace;
+  --kurd: 'Noto Kufi Arabic', sans-serif;
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    min-height: 100vh;
+  font-family: var(--kurd);
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  direction: rtl;
+  overflow-x: hidden;
 }
 
-.container {
-    background: white;
-    color: black;
-    padding: 25px;
-    border-radius: 25px;
-    max-width: 500px;
-    margin: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+/* Animated background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(83,52,131,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(233,69,96,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(15,52,96,0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-h2 {
-    color: #667eea;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 28px;
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
 }
 
-/* پەنجەرەی ڕێگەپێدان */
-.permission-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-    display: none;
+/* Header */
+.header {
+  text-align: center;
+  padding: 30px 0 25px;
 }
 
-.permission-card h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
+.header-icon {
+  font-size: 48px;
+  display: block;
+  animation: pulse-icon 2s ease-in-out infinite;
 }
 
-.permission-card p {
-    margin-bottom: 15px;
-    font-size: 14px;
-    opacity: 0.9;
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
-.permission-card button {
-    background: white;
-    color: #667eea;
-    margin-top: 0;
-    padding: 12px 20px;
-    width: auto;
-    display: inline-block;
+.header h1 {
+  font-family: var(--mono);
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-top: 8px;
+  text-transform: uppercase;
 }
 
-.permission-badge {
-    display: inline-block;
-    background: #28a745;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    margin-bottom: 10px;
+.header p {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  letter-spacing: 1px;
 }
 
-.permission-badge.denied {
-    background: #dc3545;
+/* Live clock */
+.live-clock {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-.input-group {
-    margin-bottom: 15px;
+.clock-display {
+  font-family: var(--mono);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(233,69,96,0.4);
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-    font-weight: bold;
+.clock-date {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
 }
 
-input, textarea, select {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    font-size: 16px;
-    box-sizing: border-box;
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
 }
 
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: #667eea;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3), transparent);
 }
 
-textarea {
-    resize: vertical;
-    min-height: 80px;
+.card-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title span { font-size: 14px; }
+
+/* Auto alarm section */
+.auto-section {
+  background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(83,52,131,0.08));
+  border: 1px solid rgba(233,69,96,0.2);
+}
+
+.auto-section::before {
+  background: linear-gradient(90deg, var(--accent), #ff6b9d);
+}
+
+.auto-label {
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+}
+
+/* Alarm timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s;
+}
+
+.timeline-item.active {
+  background: rgba(233,69,96,0.1);
+  border-color: rgba(233,69,96,0.3);
+}
+
+.timeline-item.done {
+  opacity: 0.4;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.timeline-item.active .timeline-dot {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: blink 1s ease-in-out infinite;
+}
+
+.timeline-item.done .timeline-dot {
+  background: var(--success);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.timeline-info { flex: 1; }
+
+.timeline-time {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.timeline-item.active .timeline-time { color: var(--accent); }
+
+.timeline-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.timeline-countdown {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: left;
+  min-width: 60px;
+}
+
+.timeline-item.active .timeline-countdown {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+/* Progress bar */
+.progress-wrap {
+  margin-bottom: 14px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  border-radius: 4px;
+  transition: width 1s linear;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--kurd);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s;
+}
+
+.btn:active::after {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, #c0392b 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(233,69,96,0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(233,69,96,0.45);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #00b894, #00d68f);
+  color: #0a1628;
+  box-shadow: 0 4px 20px rgba(0,214,143,0.3);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #e67e22, var(--warning));
+  color: #1a0a00;
+  box-shadow: 0 4px 20px rgba(255,179,71,0.3);
+}
+
+/* Form inputs */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--kurd);
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(233,69,96,0.05);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.field select {
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
 .time-row {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-.time-row input {
-    flex: 2;
+.time-row input { flex: 2; }
+.time-row select { flex: 1; }
+
+/* Toggle */
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.time-row select {
-    flex: 1;
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-label {
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.options {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 15px 0;
+.toggle {
+  width: 44px;
+  height: 24px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+  -webkit-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
 }
 
-.option-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+.toggle:checked {
+  background: var(--accent);
 }
 
-.option-item label {
-    margin-bottom: 0;
-    cursor: pointer;
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  right: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+.toggle:checked::after {
+  transform: translateX(-20px);
 }
 
-button {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: transform 0.2s;
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
-.quick-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-}
-
-.quick-btn {
-    flex: 1;
-    background: #e0e0e0;
-    color: #333;
-    margin-top: 0;
-    padding: 12px;
-    font-size: 14px;
-    min-width: 70px;
-}
-
-.test-btn {
-    background: #ff9800;
-}
-
-.alarm-list {
-    margin-top: 20px;
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 15px;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-.alarm-list h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #667eea;
-}
-
+/* Alarm list */
 .alarm-item {
-    background: white;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 4px solid #667eea;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s;
 }
 
-.alarm-info {
-    flex: 1;
-    text-align: left;
+.alarm-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent3);
+  flex-shrink: 0;
 }
 
-.alarm-title {
-    font-weight: bold;
-    font-size: 14px;
+.alarm-info { flex: 1; min-width: 0; }
+
+.alarm-title-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.alarm-time {
-    font-size: 11px;
-    color: #666;
+.alarm-time-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
 }
 
-.delete-alarm {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: auto;
-    margin: 0;
+.delete-btn {
+  background: rgba(233,69,96,0.15);
+  border: 1px solid rgba(233,69,96,0.2);
+  color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
 
-.status {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    display: none;
+.delete-btn:hover {
+  background: rgba(233,69,96,0.3);
 }
 
-.status.success {
-    background: #d4edda;
-    color: #155724;
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 1000;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
 }
 
-.status.error {
-    background: #f8d7da;
-    color: #721c24;
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(0,214,143,0.4); color: var(--success); }
+.toast.error { border-color: rgba(233,69,96,0.4); color: var(--accent); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-dim);
+  font-size: 13px;
 }
 
-.status.warning {
-    background: #fff3cd;
-    color: #856404;
+/* Divider */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 14px 0;
 }
 
-@media (max-width: 500px) {
-    .quick-row {
-        flex-wrap: wrap;
-    }
-    .quick-btn {
-        min-width: calc(25% - 8px);
-    }
+/* Ring animation overlay */
+.ring-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(233,69,96,0.08);
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
+
+.ring-overlay.active { opacity: 1; animation: ring-flash 0.5s ease-in-out 6; }
+
+@keyframes ring-flash {
+  0%, 100% { background: rgba(233,69,96,0.04); }
+  50% { background: rgba(233,69,96,0.18); }
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--mono);
+}
+
+.badge-on {
+  background: rgba(0,214,143,0.15);
+  color: var(--success);
+  border: 1px solid rgba(0,214,143,0.3);
+}
+
+.badge-off {
+  background: rgba(233,69,96,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(233,69,96,0.3);
+}
+
+.auto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-row .btn { flex: 1; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-    <h2>⏰ Alarm App Pro</h2>
-    
-    <!-- پەنجەرەی ڕێگەپێدان -->
-    <div id="permissionCard" class="permission-card">
-        <div id="permissionBadge" class="permission-badge">⚠️ پێویستە ڕێگەپێدان بدەیت</div>
-        <h3>🔔 داواکاری ڕێگەپێدان</h3>
-        <p>تکایە ڕێگەپێدان بدە بۆ ئەوەی ئاگادارکردنەوەکان لە کاتی قفلی شاشەشدا بگەن!</p>
-        <button id="requestPermissionBtn">✅ ڕێگەپێدان بدە</button>
+<div class="ring-overlay" id="ringOverlay"></div>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-icon">⏰</span>
+    <h1>ALARM PRO</h1>
+    <p>ئاگادارکردنەوەی زیرەک</p>
+  </div>
+
+  <!-- Live Clock -->
+  <div class="live-clock">
+    <div class="clock-display" id="clockDisplay">--:--:--</div>
+    <div class="clock-date" id="clockDate"></div>
+  </div>
+
+  <!-- AUTO ALARM SECTION -->
+  <div class="card auto-section">
+    <div class="auto-header">
+      <div class="auto-label">
+        <span>🤖</span> ئاگادارکردنەوەی خۆکار
+      </div>
+      <div id="autoStatusBadge" class="status-badge badge-off">⬤ ئوف</div>
     </div>
-    
-    <div class="input-group">
-        <label>📝 ناونیشان</label>
-        <input id="title" placeholder="بۆ نموونە: کاتی نوێژ، کاتی کۆبوونەوە">
+
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">
+      ٥ ئاگادارکردنەوەی خۆکار لە کاتی دیاریکراو — <strong style="color:var(--text)">٠٥:٠٠ · ١٢:٠٠ · ١٥:٣٠ · ١٨:٠٠ · ٢٢:٠٠</strong>
+    </p>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <label style="flex:1;cursor:pointer;">
+        <input type="radio" name="autoMode" id="modeTest" value="test" checked style="width:auto;margin-left:6px;">
+        <span style="font-size:13px;">⚡ تاقیکردنەوە (٣٠چ)</span>
+      </label>
+      <label style="flex:1;cursor:pointer;">
+        <input type="radio" name="autoMode" id="modeReal" value="real" style="width:auto;margin-left:6px;">
+        <span style="font-size:13px;">⏰ ڕاستەقینە (٢خ)</span>
+      </label>
     </div>
-    
-    <div class="input-group">
-        <label>💬 پەیام</label>
-        <textarea id="message" placeholder="پەیامی ئاگادارکردنەوە"></textarea>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap" style="display:none">
+      <div class="progress-label">
+        <span id="progressLabel">پێشکەوتن</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
     </div>
-    
-    <div class="input-group">
-        <label>⏰ کات</label>
-        <div class="time-row">
-            <input type="time" id="time">
-            <select id="ampm">
-                <option value="AM">پێش نیوەڕۆ</option>
-                <option value="PM">پاش نیوەڕۆ</option>
-            </select>
-        </div>
+
+    <!-- Timeline -->
+    <div class="timeline" id="autoTimeline"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="startAutoBtn" onclick="startAutoAlarms()">▶ دەستپێکردن</button>
+      <button class="btn btn-secondary" id="stopAutoBtn" onclick="stopAutoAlarms()" style="display:none">⏹ وەستاندن</button>
     </div>
-    
-    <div class="options">
-        <div class="option-item">
-            <label>🔊 دەنگ</label>
-            <input type="checkbox" id="sound" checked>
-        </div>
-        <div class="option-item">
-            <label>📳 هەژاندن</label>
-            <input type="checkbox" id="vibrate" checked>
-        </div>
+  </div>
+
+  <!-- Manual Alarm -->
+  <div class="card">
+    <div class="card-title"><span>✍️</span> دیاریکردنی دەستی</div>
+
+    <div class="field">
+      <label>ناونیشان</label>
+      <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ">
     </div>
-    
-    <button onclick="setAlarm()">📅 دیاریکردنی Alarm</button>
-    
-    <div class="quick-row">
-        <button class="quick-btn" onclick="quickAlarm(1,30,'یەکەم ئاگاداری','کاتی ١:٣٠')">🕐 ١:٣٠</button>
-        <button class="quick-btn" onclick="quickAlarm(2,0,'دووەم ئاگاداری','کاتی ٢:٠٠')">🕑 ٢:٠٠</button>
-        <button class="quick-btn" onclick="quickAlarm(3,30,'سێیەم ئاگاداری','کاتی ٣:٣٠')">🕞 ٣:٣٠</button>
-        <button class="quick-btn" onclick="quickAlarm(5,0,'پێنجەم ئاگاداری','کاتی ٥:٠٠')">🕔 ٥:٠٠</button>
+
+    <div class="field">
+      <label>پەیام</label>
+      <textarea id="message" placeholder="پەیامی ئاگادارکردنەوە..."></textarea>
     </div>
-    
-    <button class="test-btn" onclick="testAlarm()">🧪 تاقیکردنەوە (دەنگ و هەژاندن)</button>
-    
-    <div class="alarm-list">
-        <h3>📋 ئاگادارکردنەوە دیاریکراوەکان</h3>
-        <div id="alarmList"></div>
+
+    <div class="field">
+      <label>کات</label>
+      <div class="time-row">
+        <input type="time" id="time">
+        <select id="ampm">
+          <option value="AM">پێش نیوەڕۆ</option>
+          <option value="PM">پاش نیوەڕۆ</option>
+        </select>
+      </div>
     </div>
-    
-    <div id="status" class="status"></div>
+
+    <div class="divider"></div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">🔊 دەنگ</span>
+      <input type="checkbox" class="toggle" id="sound" checked>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">📳 هەژاندن</span>
+      <input type="checkbox" class="toggle" id="vibrate" checked>
+    </div>
+
+    <button class="btn btn-primary" onclick="setAlarm()" style="margin-top:14px;">📅 زیادکردنی ئاگادارکردنەوە</button>
+    <button class="btn btn-warning" onclick="testAlarm()" style="margin-top:10px;">🧪 تاقیکردنەوە</button>
+  </div>
+
+  <!-- Alarm List -->
+  <div class="card">
+    <div class="card-title"><span>📋</span> ئاگادارکردنەوە دیاریکراوەکان</div>
+    <div id="alarmList">
+      <div class="empty-state">هیچ ئاگادارکردنەوەیەک نییە</div>
+    </div>
+  </div>
+
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 let alarms = [];
+let autoRunning = false;
+let autoTimeouts = [];
+let autoStartTime = null;
+let AUTO_INTERVAL = 30 * 1000; // default: 30 seconds (test mode)
+const AUTO_COUNT = 5;
 
-// Service Worker تۆمارکردن
+// Auto alarm times (relative, in ms from start)
+let autoAlarmTimes = [];
+let autoFiredCount = 0;
+let autoIntervalId = null;
+
+// ===== FIXED ALARM TIMES (لەکۆددا ثابتن) =====
+const FIXED_ALARMS = [
+  { hour: 5,  minute: 0,  label: 'بەیانی' },
+  { hour: 12, minute: 0,  label: 'نیوەڕۆ'  },
+  { hour: 15, minute: 30, label: 'دوای نیوەڕۆ' },
+  { hour: 18, minute: 0,  label: 'ئێوارە'  },
+  { hour: 22, minute: 0,  label: 'شەو'     },
+];
+
+// Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-        .then(reg => {
-            console.log('Service Worker تۆمارکرا');
-            // دوای تۆمارکردنی Service Worker، پشکنینی ڕێگەپێدان
-            checkAndShowPermission();
-        })
-        .catch(err => {
-            console.log('Service Worker هەڵە:', err);
-            checkAndShowPermission();
-        });
-} else {
-    checkAndShowPermission();
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => console.log('SW تۆمارکرا'))
+    .catch(err => console.log('SW هەڵە:', err));
 }
 
-// پشکنینی ڕێگەپێدان و نیشاندانی پەنجەرە
-function checkAndShowPermission() {
-    const permissionCard = document.getElementById('permissionCard');
-    const permissionBadge = document.getElementById('permissionBadge');
-    
-    if (Notification.permission === "granted") {
-        permissionCard.style.display = 'none';
-        showStatus('✅ ڕێگەپێدان درا! ئێستا دەتوانیت Alarm دیاری بکەیت', true);
-    } else if (Notification.permission === "denied") {
-        permissionCard.style.display = 'block';
-        permissionBadge.className = 'permission-badge denied';
-        permissionBadge.textContent = '❌ ڕێگەپێدان ڕەت کرا';
-        document.getElementById('permissionCard').innerHTML = `
-            <div id="permissionBadge" class="permission-badge denied">❌ ڕێگەپێدان ڕەت کرا</div>
-            <h3>⚠️ ڕێگەپێدان پێویستە</h3>
-            <p>تکایە لە تەنظیماتەکانی مۆبایلەکەت، بۆ ئەم ئەپە ڕێگەپێدانی ئاگادارکردنەوەکان (Notifications) بکەرەوە.</p>
-            <p style="font-size:12px; margin-top:10px;">بۆ ئەندرۆید: تەنظیمات > ئەپەکان > Alarm App > ڕێگەپێدان > ئاگادارکردنەوە</p>
-            <button id="requestPermissionBtn" style="background:white; color:#667eea;">🔄 دووبارە هەوڵبدە</button>
-        `;
-        document.getElementById('requestPermissionBtn').onclick = () => {
-            Notification.requestPermission().then(perm => {
-                if (perm === "granted") {
-                    location.reload();
-                } else {
-                    showStatus('ڕێگەپێدان نەدرا! تکایە لە تەنظیماتەکان بیکەرەوە', false);
-                }
-            });
-        };
+// ڕێگەپێدان — تەنها لەکاتی کلیکی بەکارهێنەر داوا دەکرێت
+function requestNotificationPermission(callback) {
+  if (Notification.permission === "granted") {
+    if (callback) callback(true);
+    return;
+  }
+  if (Notification.permission === "denied") {
+    showToast("❌ ڕێگەپێدان بلۆک کراوە — لە ڕێکخستنەکانی مۆبایل چالاک بکەرەوە", false);
+    if (callback) callback(false);
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    if (p === "granted") {
+      showToast("✅ ڕێگەپێدان وەرگیرا!", true);
+      if (callback) callback(true);
     } else {
-        // default - هێشتا ڕێگەپێدان نەدراوە
-        permissionCard.style.display = 'block';
-        permissionBadge.className = 'permission-badge';
-        permissionBadge.textContent = '⚠️ پێویستە ڕێگەپێدان بدەیت';
-        
-        const requestBtn = document.getElementById('requestPermissionBtn');
-        if (requestBtn) {
-            requestBtn.onclick = () => {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        permissionCard.style.display = 'none';
-                        showStatus('✅ سوپاس! ئێستا دەتوانیت Alarm دیاری بکەیت', true);
-                        // دووبارە Service Worker تۆمار بکە
-                        if (navigator.serviceWorker) {
-                            navigator.serviceWorker.register('./sw.js');
-                        }
-                    } else {
-                        showStatus('ڕێگەپێدان نەدرا! ئاگادارکردنەوەکان نایەن', false);
-                    }
-                });
-            };
-        }
+      showToast("⚠️ ڕێگەپێدانی ئاگادارکردنەوە پێویستە!", false);
+      if (callback) callback(false);
     }
+  });
 }
 
-// هەر کاتێک ئەپەکە دەکرێتەوە، دووبارە پشکنین بکە
-window.addEventListener('focus', () => {
-    checkAndShowPermission();
-});
+// ========== CLOCK ==========
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
+  
+  const days = ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','ھەینی','شەممە'];
+  const months = ['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەممووز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
+  document.getElementById('clockDate').textContent = 
+    `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
 
-function playSound() {
-    let sound = document.getElementById("sound").checked;
-    if (!sound) return;
-    
-    try {
-        let audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
-        audio.volume = 1;
-        audio.play().catch(e => {
-            let audio2 = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
-            audio2.play();
-        });
-    } catch(e) {
-        console.log("دەنگ نەکرا");
+setInterval(updateClock, 1000);
+updateClock();
+
+// ========== AUTO ALARMS ==========
+function buildAutoTimeline() {
+  const container = document.getElementById('autoTimeline');
+  container.innerHTML = '';
+
+  for (let i = 0; i < AUTO_COUNT; i++) {
+    const fa = FIXED_ALARMS[i];
+    const hh = String(fa.hour).padStart(2,'0');
+    const mm = String(fa.minute).padStart(2,'0');
+
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.id = `tl-${i}`;
+
+    const fired = autoRunning && i < autoFiredCount;
+    const active = autoRunning && i === autoFiredCount;
+
+    if (fired) item.classList.add('done');
+    if (active) item.classList.add('active');
+
+    // countdown
+    let cdText = '';
+    if (fired) {
+      cdText = '✓';
+    } else if (autoRunning && autoAlarmTimes[i]) {
+      const rem = autoAlarmTimes[i] - Date.now();
+      if (rem > 0) {
+        const ms = Math.floor(rem / 60000);
+        const ss = Math.floor((rem % 60000) / 1000);
+        cdText = `${ms}:${String(ss).padStart(2,'0')}`;
+      } else {
+        cdText = '🔔';
+      }
     }
+
+    item.innerHTML = `
+      <div class="timeline-dot"></div>
+      <div class="timeline-info">
+        <div class="timeline-time">${fired ? '✓ تاقیکرایەوە' : `${hh}:${mm}`}</div>
+        <div class="timeline-label">ئاگادارکردنەوەی ${i+1} — ${fa.label}</div>
+      </div>
+      <div class="timeline-countdown" id="cd-${i}">${cdText}</div>
+    `;
+    container.appendChild(item);
+  }
+}
+
+function startAutoAlarms() {
+  if (autoRunning) return;
+
+  // ڕێگەپێدان لەکاتی کلیک داوا بکە
+  requestNotificationPermission(granted => {
+    if (!granted) return;
+    _doStartAutoAlarms();
+  });
+}
+
+function _doStartAutoAlarms() {
+  autoRunning = true;
+  autoStartTime = Date.now();
+  autoFiredCount = 0;
+  autoTimeouts = [];
+  autoAlarmTimes = [];
+
+  document.getElementById('startAutoBtn').style.display = 'none';
+  document.getElementById('stopAutoBtn').style.display = 'block';
+  document.getElementById('autoStatusBadge').textContent = '⬤ چالاک';
+  document.getElementById('autoStatusBadge').className = 'status-badge badge-on';
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('modeTest').disabled = true;
+  document.getElementById('modeReal').disabled = true;
+
+  const useTestMode = document.getElementById('modeTest').checked;
+  AUTO_INTERVAL = useTestMode ? 30 * 1000 : 2 * 60 * 1000;
+
+  // بۆ هەر ئاگادارکردنەوەیەک کاتی تاقیکردنەوە حساب بکە
+  for (let i = 0; i < AUTO_COUNT; i++) {
+    let targetMs;
+    if (useTestMode) {
+      // مودی تاقیکردنەوە: هەر ٣٠ چرکە
+      targetMs = autoStartTime + (i + 1) * AUTO_INTERVAL;
+    } else {
+      // مودی ڕاستەقینە: کاتی ثابت لەکۆد
+      const fa = FIXED_ALARMS[i];
+      const now = new Date();
+      const target = new Date();
+      target.setHours(fa.hour, fa.minute, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 1);
+      targetMs = target.getTime();
+    }
+    autoAlarmTimes.push(targetMs);
+
+    const idx = i;
+    const delay = targetMs - Date.now();
+    const t = setTimeout(() => {
+      autoFiredCount = idx + 1;
+      triggerAutoAlarm(idx + 1);
+      updateProgress();
+      buildAutoTimeline();
+      if (autoFiredCount >= AUTO_COUNT) {
+        setTimeout(() => stopAutoAlarms(true), 2000);
+      }
+    }, delay);
+    autoTimeouts.push(t);
+  }
+
+  autoIntervalId = setInterval(() => {
+    buildAutoTimeline();
+    updateCountdowns();
+  }, 1000);
+
+  buildAutoTimeline();
+  updateProgress();
+  const modeLabel = useTestMode ? '٣٠ چرکە' : 'کاتی دیاریکراو';
+  showToast(`✅ دەستی پێکرد — ${modeLabel}`, true);
+}
+
+function updateCountdowns() {
+  // buildAutoTimeline handles display; this just triggers a rebuild
+  buildAutoTimeline();
+}
+
+function updateProgress() {
+  const pct = Math.min(100, Math.round((autoFiredCount / AUTO_COUNT) * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = 
+    autoFiredCount < AUTO_COUNT 
+      ? `${autoFiredCount} لە ${AUTO_COUNT} تاقیکرایەوە`
+      : '✅ هەموو تاقیکرایەوە!';
+}
+
+function stopAutoAlarms(completed = false) {
+  autoRunning = false;
+  autoTimeouts.forEach(t => clearTimeout(t));
+  autoTimeouts = [];
+  if (autoIntervalId) { clearInterval(autoIntervalId); autoIntervalId = null; }
+
+  document.getElementById('startAutoBtn').style.display = 'block';
+  document.getElementById('stopAutoBtn').style.display = 'none';
+  document.getElementById('autoStatusBadge').textContent = '⬤ ئوف';
+  document.getElementById('autoStatusBadge').className = 'status-badge badge-off';
+  document.getElementById('modeTest').disabled = false;
+  document.getElementById('modeReal').disabled = false;
+
+  if (!completed) {
+    document.getElementById('progressWrap').style.display = 'none';
+    autoFiredCount = 0;
+    buildAutoTimeline();
+    showToast("⏹ ئاگادارکردنەوەی خۆکار وەستا", false);
+  } else {
+    showToast("🎉 هەموو ٥ ئاگادارکردنەوەکان تاقیکرایەوە!", true);
+  }
+}
+
+function triggerAutoAlarm(index) {
+  const title = `🤖 ئاگادارکردنەوەی خۆکار #${index}`;
+  const message = `ئاگادارکردنەوەی ${index} لە ${AUTO_COUNT} — ئەپ بەڕێوەدەچێت ✅`;
+  
+  playSound();
+  vibratePhone();
+  sendNotification(title, message);
+  showToast(`🔔 ئاگادارکردنەوەی ${index} گەیشت!`, true);
+  
+  // Flash overlay
+  const overlay = document.getElementById('ringOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => overlay.classList.remove('active'), 3500);
+}
+
+// Initialize timeline
+buildAutoTimeline();
+
+// ========== SOUND & VIBRATE ==========
+function playSound() {
+  if (!document.getElementById("sound").checked) return;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  
+  function beep(freq, start, dur) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.5, ctx.currentTime + start);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+    osc.start(ctx.currentTime + start);
+    osc.stop(ctx.currentTime + start + dur);
+  }
+
+  // Alarm melody
+  beep(880, 0, 0.2);
+  beep(1100, 0.25, 0.2);
+  beep(880, 0.5, 0.2);
+  beep(1100, 0.75, 0.4);
+  beep(880, 1.3, 0.2);
+  beep(1100, 1.55, 0.2);
+  beep(880, 1.8, 0.5);
 }
 
 function vibratePhone() {
-    let vibrateOn = document.getElementById("vibrate").checked;
-    if (vibrateOn && navigator.vibrate) {
-        navigator.vibrate([500, 200, 500, 200, 1000]);
-    }
+  if (document.getElementById("vibrate").checked && navigator.vibrate) {
+    navigator.vibrate([400, 150, 400, 150, 800, 200, 400, 150, 400]);
+  }
 }
 
-function sendNotification(title, message) {
-    if (Notification.permission !== "granted") {
-        showStatus('⚠️ ڕێگەپێدان نەدراوە! تکایە ڕێگەپێدان بدە', false);
-        checkAndShowPermission();
-        return false;
-    }
-    
-    // هەوڵدان لە ڕێگەی Service Worker
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.getRegistration().then(reg => {
-            if (reg) {
-                reg.showNotification(title, {
-                    body: message,
-                    icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
-                    badge: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
-                    vibrate: [200, 100, 200, 100, 200],
-                    requireInteraction: true,
-                    tag: "alarm-" + Date.now()
-                });
-            } else {
-                new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
-            }
-        });
+function sendNotification(title, body) {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+    return;
+  }
+  
+  // Try via Service Worker first (works when screen is locked)
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg) {
+      reg.showNotification(title, {
+        body,
+        icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
+        vibrate: [300, 100, 300, 100, 600],
+        requireInteraction: true,
+        tag: "alarm-" + Date.now()
+      });
     } else {
-        try {
-            new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
-        } catch(e) {
-            console.log("Notification نەنێردرا");
-            return false;
-        }
+      // Fallback: basic Notification
+      try { new Notification(title, { body }); } catch(e) {}
     }
-    return true;
+  }).catch(() => {
+    try { new Notification(title, { body }); } catch(e) {}
+  });
 }
 
+// ========== MANUAL ALARM ==========
 function setAlarm() {
-    if (Notification.permission !== "granted") {
-        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
-        checkAndShowPermission();
-        return;
-    }
-    
-    let title = document.getElementById("title").value;
-    let message = document.getElementById("message").value;
-    let time = document.getElementById("time").value;
-    let ampm = document.getElementById("ampm").value;
-    
-    if (!title) {
-        showStatus("تکایە ناونیشان بنووسە", false);
-        return;
-    }
-    if (!message) {
-        showStatus("تکایە پەیام بنووسە", false);
-        return;
-    }
-    if (!time) {
-        showStatus("تکایە کات دیاری بکە", false);
-        return;
-    }
-    
-    let [hours, minutes] = time.split(":");
-    hours = parseInt(hours);
-    
-    if (ampm === "PM" && hours !== 12) hours += 12;
-    if (ampm === "AM" && hours === 12) hours = 0;
-    
-    let now = new Date();
-    let alarm = new Date();
-    alarm.setHours(hours);
-    alarm.setMinutes(minutes);
-    alarm.setSeconds(0);
-    
-    if (alarm <= now) {
-        alarm.setDate(alarm.getDate() + 1);
-    }
-    
-    let timeStr = alarm.toLocaleTimeString("ku", { hour: "2-digit", minute: "2-digit" });
-    let dateStr = alarm.toLocaleDateString("ku");
-    
-    alarms.push({
-        id: Date.now(),
-        title: title,
-        message: message,
-        time: alarm.getTime(),
-        timeStr: timeStr,
-        dateStr: dateStr
-    });
-    
-    saveAlarms();
-    updateAlarmList();
-    showStatus(`✅ Alarm بۆ کاتی ${timeStr} دیاری کرا`, true);
-    
-    document.getElementById("title").value = "";
-    document.getElementById("message").value = "";
-    document.getElementById("time").value = "";
-}
+  let title = document.getElementById("title").value.trim();
+  let message = document.getElementById("message").value.trim();
+  let time = document.getElementById("time").value;
+  let ampm = document.getElementById("ampm").value;
 
-function quickAlarm(hour, minute, title, message) {
-    if (Notification.permission !== "granted") {
-        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
-        checkAndShowPermission();
-        return;
-    }
-    
-    let now = new Date();
-    let alarm = new Date();
-    alarm.setHours(hour, minute, 0, 0);
-    
-    if (alarm <= now) {
-        alarm.setDate(alarm.getDate() + 1);
-    }
-    
-    let timeStr = alarm.toLocaleTimeString("ku", { hour: "2-digit", minute: "2-digit" });
-    let dateStr = alarm.toLocaleDateString("ku");
-    
-    alarms.push({
-        id: Date.now(),
-        title: title,
-        message: message,
-        time: alarm.getTime(),
-        timeStr: timeStr,
-        dateStr: dateStr
-    });
-    
-    saveAlarms();
-    updateAlarmList();
-    showStatus(`✅ Alarm بۆ کاتی ${timeStr} دیاری کرا`, true);
+  if (!title) { showToast("تکایە ناونیشان بنووسە", false); return; }
+  if (!message) { showToast("تکایە پەیام بنووسە", false); return; }
+  if (!time) { showToast("تکایە کات دیاری بکە", false); return; }
+
+  let [hours, minutes] = time.split(":").map(Number);
+  if (ampm === "PM" && hours !== 12) hours += 12;
+  if (ampm === "AM" && hours === 12) hours = 0;
+
+  let now = new Date();
+  let alarm = new Date();
+  alarm.setHours(hours, minutes, 0, 0);
+  if (alarm <= now) alarm.setDate(alarm.getDate() + 1);
+
+  const hh = String(alarm.getHours()).padStart(2,'0');
+  const mm = String(alarm.getMinutes()).padStart(2,'0');
+
+  alarms.push({
+    id: Date.now(),
+    title, message,
+    time: alarm.getTime(),
+    timeStr: `${hh}:${mm}`,
+    dateStr: alarm.toLocaleDateString("ku")
+  });
+
+  saveAlarms();
+  updateAlarmList();
+  showToast(`✅ ئاگادارکردنەوە بۆ ${hh}:${mm} دیاری کرا`, true);
+
+  document.getElementById("title").value = "";
+  document.getElementById("message").value = "";
+  document.getElementById("time").value = "";
 }
 
 function testAlarm() {
-    if (Notification.permission !== "granted") {
-        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
-        checkAndShowPermission();
-        return;
-    }
-    playSound();
-    vibratePhone();
-    sendNotification("🧪 تاقیکردنەوە", "ئەگەر دەنگ و هەژاندن هات، ئەوا کاردەکات!");
-    showStatus("🔔 تاقیکردنەوە نێردرا!", true);
+  playSound();
+  vibratePhone();
+  sendNotification("🧪 تاقیکردنەوە", "ئەگەر دەنگت بیست، ئەپ کاردەکات!");
+  showToast("🔔 تاقیکردنەوە نێردرا!", true);
+  const overlay = document.getElementById('ringOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => overlay.classList.remove('active'), 3500);
 }
 
 function saveAlarms() {
-    localStorage.setItem("alarms", JSON.stringify(alarms));
+  localStorage.setItem("alarms", JSON.stringify(alarms));
 }
 
 function loadAlarms() {
-    let saved = localStorage.getItem("alarms");
-    if (saved) {
-        alarms = JSON.parse(saved);
-        updateAlarmList();
-    }
+  const saved = localStorage.getItem("alarms");
+  if (saved) { alarms = JSON.parse(saved); updateAlarmList(); }
 }
 
 function updateAlarmList() {
-    let container = document.getElementById("alarmList");
-    if (alarms.length === 0) {
-        container.innerHTML = '<div style="text-align:center;color:#999;padding:15px;">هیچ Alarmێک دیاری نەکراوە</div>';
-        return;
-    }
-    
-    let html = "";
-    for (let i = 0; i < alarms.length; i++) {
-        let a = alarms[i];
-        html += `
-            <div class="alarm-item">
-                <div class="alarm-info">
-                    <div class="alarm-title">${escapeHtml(a.title)}</div>
-                    <div class="alarm-time">${a.timeStr} - ${a.dateStr} | ${escapeHtml(a.message)}</div>
-                </div>
-                <button class="delete-alarm" onclick="deleteAlarm(${i})">🗑️</button>
-            </div>
-        `;
-    }
-    container.innerHTML = html;
+  const container = document.getElementById("alarmList");
+  if (alarms.length === 0) {
+    container.innerHTML = '<div class="empty-state">📭 هیچ ئاگادارکردنەوەیەک نییە</div>';
+    return;
+  }
+  container.innerHTML = alarms.map((a, i) => `
+    <div class="alarm-item">
+      <div class="alarm-dot"></div>
+      <div class="alarm-info">
+        <div class="alarm-title-text">${escapeHtml(a.title)}</div>
+        <div class="alarm-time-text">${a.timeStr} — ${a.dateStr} | ${escapeHtml(a.message)}</div>
+      </div>
+      <button class="delete-btn" onclick="deleteAlarm(${i})">🗑️</button>
+    </div>
+  `).join('');
 }
 
 function escapeHtml(text) {
-    if (!text) return "";
-    let div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+  if (!text) return "";
+  const d = document.createElement("div");
+  d.textContent = text;
+  return d.innerHTML;
 }
 
 function deleteAlarm(index) {
-    alarms.splice(index, 1);
-    saveAlarms();
-    updateAlarmList();
-    showStatus("Alarm لابرا", true);
+  alarms.splice(index, 1);
+  saveAlarms();
+  updateAlarmList();
+  showToast("ئاگادارکردنەوە لابرا", false);
 }
 
-function showStatus(msg, success) {
-    let status = document.getElementById("status");
-    status.textContent = msg;
-    status.className = `status ${success ? "success" : "error"}`;
-    status.style.display = "block";
-    setTimeout(() => {
-        status.style.display = "none";
-    }, 3000);
+function showToast(msg, success) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast ${success ? 'success' : 'error'} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = `toast ${success ? 'success' : 'error'}`; }, 3500);
 }
 
-// پشکنینی کات
+// ========== CHECKER ==========
 setInterval(() => {
-    let now = Date.now();
-    for (let i = 0; i < alarms.length; i++) {
-        if (now >= alarms[i].time) {
-            playSound();
-            vibratePhone();
-            sendNotification(alarms[i].title, alarms[i].message);
-            alarms.splice(i, 1);
-            saveAlarms();
-            updateAlarmList();
-            showStatus("🔔 Alarm! کات گەیشت!", true);
-            i--;
-        }
+  const now = Date.now();
+  let changed = false;
+  for (let i = alarms.length - 1; i >= 0; i--) {
+    if (now >= alarms[i].time) {
+      playSound();
+      vibratePhone();
+      sendNotification(alarms[i].title, alarms[i].message);
+      showToast(`🔔 ${alarms[i].title} — کات گەیشت!`, true);
+      const overlay = document.getElementById('ringOverlay');
+      overlay.classList.add('active');
+      setTimeout(() => overlay.classList.remove('active'), 3500);
+      alarms.splice(i, 1);
+      changed = true;
     }
+  }
+  if (changed) { saveAlarms(); updateAlarmList(); }
 }, 1000);
 
 loadAlarms();
-
-// ڕێنمایی بۆ مۆبایل
-if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    setTimeout(() => {
-        if (Notification.permission !== "granted") {
-            showStatus("📱 تکایە ڕێگەپێدان بدە بۆ ئەوەی Alarm لە کاتی قفلی شاشەشدا کاربکات!", false);
-        }
-    }, 1000);
-}
 </script>
-
 </body>
 </html>
