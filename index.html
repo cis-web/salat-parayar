@@ -2,10 +2,10 @@
 <html lang="ku">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Alarm App Pro</title>
 <meta name="theme-color" content="#667eea">
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="manifest.json">
 
 <style>
 * {
@@ -38,6 +38,51 @@ h2 {
     font-size: 28px;
 }
 
+/* پەنجەرەی ڕێگەپێدان */
+.permission-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
+}
+
+.permission-card h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.permission-card p {
+    margin-bottom: 15px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.permission-card button {
+    background: white;
+    color: #667eea;
+    margin-top: 0;
+    padding: 12px 20px;
+    width: auto;
+    display: inline-block;
+}
+
+.permission-badge {
+    display: inline-block;
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.permission-badge.denied {
+    background: #dc3545;
+}
+
 .input-group {
     margin-bottom: 15px;
 }
@@ -56,6 +101,11 @@ input, textarea, select {
     border-radius: 10px;
     font-size: 16px;
     box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
 }
 
 textarea {
@@ -210,6 +260,11 @@ button:active {
     color: #721c24;
 }
 
+.status.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
 @media (max-width: 500px) {
     .quick-row {
         flex-wrap: wrap;
@@ -225,6 +280,14 @@ button:active {
 
 <div class="container">
     <h2>⏰ Alarm App Pro</h2>
+    
+    <!-- پەنجەرەی ڕێگەپێدان -->
+    <div id="permissionCard" class="permission-card">
+        <div id="permissionBadge" class="permission-badge">⚠️ پێویستە ڕێگەپێدان بدەیت</div>
+        <h3>🔔 داواکاری ڕێگەپێدان</h3>
+        <p>تکایە ڕێگەپێدان بدە بۆ ئەوەی ئاگادارکردنەوەکان لە کاتی قفلی شاشەشدا بگەن!</p>
+        <button id="requestPermissionBtn">✅ ڕێگەپێدان بدە</button>
+    </div>
     
     <div class="input-group">
         <label>📝 ناونیشان</label>
@@ -285,24 +348,75 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
         .then(reg => {
             console.log('Service Worker تۆمارکرا');
-            // هەر کاتێک پەڕە بارکرا، بڵێ Service Worker چالاک بێت
-            if (reg.active) {
-                console.log('Service Worker چالاکە');
-            }
+            // دوای تۆمارکردنی Service Worker، پشکنینی ڕێگەپێدان
+            checkAndShowPermission();
         })
         .catch(err => {
             console.log('Service Worker هەڵە:', err);
-            // ئەگەر Service Worker تۆمار نەبوو، ڕێگەپێدانی Notification بدە
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission();
-            }
+            checkAndShowPermission();
         });
+} else {
+    checkAndShowPermission();
 }
 
-// داواکردنی ڕێگەپێدان
-if (Notification.permission !== "granted") {
-    Notification.requestPermission();
+// پشکنینی ڕێگەپێدان و نیشاندانی پەنجەرە
+function checkAndShowPermission() {
+    const permissionCard = document.getElementById('permissionCard');
+    const permissionBadge = document.getElementById('permissionBadge');
+    
+    if (Notification.permission === "granted") {
+        permissionCard.style.display = 'none';
+        showStatus('✅ ڕێگەپێدان درا! ئێستا دەتوانیت Alarm دیاری بکەیت', true);
+    } else if (Notification.permission === "denied") {
+        permissionCard.style.display = 'block';
+        permissionBadge.className = 'permission-badge denied';
+        permissionBadge.textContent = '❌ ڕێگەپێدان ڕەت کرا';
+        document.getElementById('permissionCard').innerHTML = `
+            <div id="permissionBadge" class="permission-badge denied">❌ ڕێگەپێدان ڕەت کرا</div>
+            <h3>⚠️ ڕێگەپێدان پێویستە</h3>
+            <p>تکایە لە تەنظیماتەکانی مۆبایلەکەت، بۆ ئەم ئەپە ڕێگەپێدانی ئاگادارکردنەوەکان (Notifications) بکەرەوە.</p>
+            <p style="font-size:12px; margin-top:10px;">بۆ ئەندرۆید: تەنظیمات > ئەپەکان > Alarm App > ڕێگەپێدان > ئاگادارکردنەوە</p>
+            <button id="requestPermissionBtn" style="background:white; color:#667eea;">🔄 دووبارە هەوڵبدە</button>
+        `;
+        document.getElementById('requestPermissionBtn').onclick = () => {
+            Notification.requestPermission().then(perm => {
+                if (perm === "granted") {
+                    location.reload();
+                } else {
+                    showStatus('ڕێگەپێدان نەدرا! تکایە لە تەنظیماتەکان بیکەرەوە', false);
+                }
+            });
+        };
+    } else {
+        // default - هێشتا ڕێگەپێدان نەدراوە
+        permissionCard.style.display = 'block';
+        permissionBadge.className = 'permission-badge';
+        permissionBadge.textContent = '⚠️ پێویستە ڕێگەپێدان بدەیت';
+        
+        const requestBtn = document.getElementById('requestPermissionBtn');
+        if (requestBtn) {
+            requestBtn.onclick = () => {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        permissionCard.style.display = 'none';
+                        showStatus('✅ سوپاس! ئێستا دەتوانیت Alarm دیاری بکەیت', true);
+                        // دووبارە Service Worker تۆمار بکە
+                        if (navigator.serviceWorker) {
+                            navigator.serviceWorker.register('./sw.js');
+                        }
+                    } else {
+                        showStatus('ڕێگەپێدان نەدرا! ئاگادارکردنەوەکان نایەن', false);
+                    }
+                });
+            };
+        }
+    }
 }
+
+// هەر کاتێک ئەپەکە دەکرێتەوە، دووبارە پشکنین بکە
+window.addEventListener('focus', () => {
+    checkAndShowPermission();
+});
 
 function playSound() {
     let sound = document.getElementById("sound").checked;
@@ -312,7 +426,6 @@ function playSound() {
         let audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
         audio.volume = 1;
         audio.play().catch(e => {
-            // ئەگەر نەکرد، دەنگی دووەم
             let audio2 = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
             audio2.play();
         });
@@ -329,9 +442,13 @@ function vibratePhone() {
 }
 
 function sendNotification(title, message) {
-    if (Notification.permission !== "granted") return;
+    if (Notification.permission !== "granted") {
+        showStatus('⚠️ ڕێگەپێدان نەدراوە! تکایە ڕێگەپێدان بدە', false);
+        checkAndShowPermission();
+        return false;
+    }
     
-    // یەکەم: هەوڵبدە لە ڕێگەی Service Worker
+    // هەوڵدان لە ڕێگەی Service Worker
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.getRegistration().then(reg => {
             if (reg) {
@@ -344,21 +461,27 @@ function sendNotification(title, message) {
                     tag: "alarm-" + Date.now()
                 });
             } else {
-                // ئەگەر Service Worker نەبوو، بە ڕێگای ئاسایی
                 new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
             }
         });
     } else {
-        // ئەگەر Service Worker نەبوو، بە ڕێگای ئاسایی
         try {
             new Notification(title, { body: message, icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png" });
         } catch(e) {
             console.log("Notification نەنێردرا");
+            return false;
         }
     }
+    return true;
 }
 
 function setAlarm() {
+    if (Notification.permission !== "granted") {
+        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
+        checkAndShowPermission();
+        return;
+    }
+    
     let title = document.getElementById("title").value;
     let message = document.getElementById("message").value;
     let time = document.getElementById("time").value;
@@ -415,6 +538,12 @@ function setAlarm() {
 }
 
 function quickAlarm(hour, minute, title, message) {
+    if (Notification.permission !== "granted") {
+        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
+        checkAndShowPermission();
+        return;
+    }
+    
     let now = new Date();
     let alarm = new Date();
     alarm.setHours(hour, minute, 0, 0);
@@ -441,6 +570,11 @@ function quickAlarm(hour, minute, title, message) {
 }
 
 function testAlarm() {
+    if (Notification.permission !== "granted") {
+        showStatus('❌ تکایە یەکەمجار ڕێگەپێدان بدە!', false);
+        checkAndShowPermission();
+        return;
+    }
     playSound();
     vibratePhone();
     sendNotification("🧪 تاقیکردنەوە", "ئەگەر دەنگ و هەژاندن هات، ئەوا کاردەکات!");
@@ -506,7 +640,7 @@ function showStatus(msg, success) {
     }, 3000);
 }
 
-// پشکنینی کات (هەر چرکەیەک)
+// پشکنینی کات
 setInterval(() => {
     let now = Date.now();
     for (let i = 0; i < alarms.length; i++) {
@@ -524,6 +658,15 @@ setInterval(() => {
 }, 1000);
 
 loadAlarms();
+
+// ڕێنمایی بۆ مۆبایل
+if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    setTimeout(() => {
+        if (Notification.permission !== "granted") {
+            showStatus("📱 تکایە ڕێگەپێدان بدە بۆ ئەوەی Alarm لە کاتی قفلی شاشەشدا کاربکات!", false);
+        }
+    }, 1000);
+}
 </script>
 
 </body>
