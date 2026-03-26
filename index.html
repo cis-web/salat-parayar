@@ -1,1131 +1,410 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="ku" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alarm App Pro</title>
-<meta name="theme-color" content="#0f0f1a">
+<title>بانگی سلێمانی</title>
+<meta name="theme-color" content="#0a0a0f">
 <link rel="manifest" href="./manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Space+Mono:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f0f1a;
-  --surface: #1a1a2e;
-  --surface2: #16213e;
-  --accent: #e94560;
-  --accent2: #0f3460;
-  --accent3: #533483;
-  --text: #e0e0f0;
-  --text-dim: #888aaa;
-  --success: #00d68f;
-  --warning: #ffb347;
-  --mono: 'Space Mono', monospace;
-  --kurd: 'Noto Kufi Arabic', sans-serif;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: var(--kurd);
-  background: var(--bg);
-  min-height: 100vh;
-  color: var(--text);
-  direction: rtl;
-  overflow-x: hidden;
-}
-
-/* Animated background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse at 20% 50%, rgba(83,52,131,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(233,69,96,0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(15,52,96,0.2) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.app {
-  position: relative;
-  z-index: 1;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 20px 16px 40px;
-}
-
-/* Header */
-.header {
-  text-align: center;
-  padding: 30px 0 25px;
-}
-
-.header-icon {
-  font-size: 48px;
-  display: block;
-  animation: pulse-icon 2s ease-in-out infinite;
-}
-
-@keyframes pulse-icon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-.header h1 {
-  font-family: var(--mono);
-  font-size: 22px;
-  letter-spacing: 3px;
-  color: var(--accent);
-  margin-top: 8px;
-  text-transform: uppercase;
-}
-
-.header p {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-top: 4px;
-  letter-spacing: 1px;
-}
-
-/* Live clock */
-.live-clock {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.clock-display {
-  font-family: var(--mono);
-  font-size: 42px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px rgba(233,69,96,0.4);
-}
-
-.clock-date {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-top: 4px;
-}
-
-/* Cards */
-.card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(255,255,255,0.06);
-  position: relative;
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent3), transparent);
-}
-
-.card-title {
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-title span { font-size: 14px; }
-
-/* Auto alarm section */
-.auto-section {
-  background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(83,52,131,0.08));
-  border: 1px solid rgba(233,69,96,0.2);
-}
-
-.auto-section::before {
-  background: linear-gradient(90deg, var(--accent), #ff6b9d);
-}
-
-.auto-label {
-  color: var(--accent);
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--mono);
-}
-
-/* Alarm timeline */
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.timeline-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.05);
-  transition: all 0.3s;
-}
-
-.timeline-item.active {
-  background: rgba(233,69,96,0.1);
-  border-color: rgba(233,69,96,0.3);
-}
-
-.timeline-item.done {
-  opacity: 0.4;
-}
-
-.timeline-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--text-dim);
-  flex-shrink: 0;
-  transition: all 0.3s;
-}
-
-.timeline-item.active .timeline-dot {
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-  animation: blink 1s ease-in-out infinite;
-}
-
-.timeline-item.done .timeline-dot {
-  background: var(--success);
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.timeline-info { flex: 1; }
-
-.timeline-time {
-  font-family: var(--mono);
-  font-size: 15px;
-  color: var(--text);
-  font-weight: 700;
-}
-
-.timeline-item.active .timeline-time { color: var(--accent); }
-
-.timeline-label {
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-top: 1px;
-}
-
-.timeline-countdown {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  text-align: left;
-  min-width: 60px;
-}
-
-.timeline-item.active .timeline-countdown {
-  color: var(--warning);
-  font-weight: 700;
-}
-
-/* Progress bar */
-.progress-wrap {
-  margin-bottom: 14px;
-}
-
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-}
-
-.progress-bar {
-  height: 4px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent3));
-  border-radius: 4px;
-  transition: width 1s linear;
-}
-
-/* Buttons */
-.btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-family: var(--kurd);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0);
-  transition: background 0.2s;
-}
-
-.btn:active::after {
-  background: rgba(255,255,255,0.1);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #c0392b 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(233,69,96,0.35);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 25px rgba(233,69,96,0.45);
-}
-
-.btn-secondary {
-  background: rgba(255,255,255,0.06);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #00b894, #00d68f);
-  color: #0a1628;
-  box-shadow: 0 4px 20px rgba(0,214,143,0.3);
-}
-
-.btn-warning {
-  background: linear-gradient(135deg, #e67e22, var(--warning));
-  color: #1a0a00;
-  box-shadow: 0 4px 20px rgba(255,179,71,0.3);
-}
-
-/* Form inputs */
-.field {
-  margin-bottom: 14px;
-}
-
-.field label {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 7px;
-}
-
-.field input,
-.field textarea,
-.field select {
-  width: 100%;
-  padding: 12px 14px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: var(--kurd);
-  font-size: 15px;
-  box-sizing: border-box;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.field input:focus,
-.field textarea:focus,
-.field select:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: rgba(233,69,96,0.05);
-}
-
-.field textarea {
-  resize: vertical;
-  min-height: 70px;
-}
-
-.field select {
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-
-.time-row {
-  display: flex;
-  gap: 10px;
-}
-
-.time-row input { flex: 2; }
-.time-row select { flex: 1; }
-
-/* Toggle */
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.toggle-row:last-child { border-bottom: none; }
-
-.toggle-label {
-  font-size: 14px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.toggle {
-  width: 44px;
-  height: 24px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 12px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.3s;
-  -webkit-appearance: none;
-  appearance: none;
-  flex-shrink: 0;
-}
-
-.toggle:checked {
-  background: var(--accent);
-}
-
-.toggle::after {
-  content: '';
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: white;
-  top: 3px;
-  right: 3px;
-  transition: transform 0.3s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-.toggle:checked::after {
-  transform: translateX(-20px);
-}
-
-/* Alarm list */
-.alarm-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 10px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(255,255,255,0.05);
-  transition: all 0.2s;
-}
-
-.alarm-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent3);
-  flex-shrink: 0;
-}
-
-.alarm-info { flex: 1; min-width: 0; }
-
-.alarm-title-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.alarm-time-text {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-top: 2px;
-}
-
-.delete-btn {
-  background: rgba(233,69,96,0.15);
-  border: 1px solid rgba(233,69,96,0.2);
-  color: var(--accent);
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.delete-btn:hover {
-  background: rgba(233,69,96,0.3);
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--surface);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-size: 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  z-index: 1000;
-  white-space: nowrap;
-  max-width: 90vw;
-  text-align: center;
-}
-
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.success { border-color: rgba(0,214,143,0.4); color: var(--success); }
-.toast.error { border-color: rgba(233,69,96,0.4); color: var(--accent); }
-
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 20px;
-  color: var(--text-dim);
-  font-size: 13px;
-}
-
-/* Divider */
-.divider {
-  height: 1px;
-  background: rgba(255,255,255,0.06);
-  margin: 14px 0;
-}
-
-/* Ring animation overlay */
-.ring-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(233,69,96,0.08);
-  pointer-events: none;
-  z-index: 999;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.ring-overlay.active { opacity: 1; animation: ring-flash 0.5s ease-in-out 6; }
-
-@keyframes ring-flash {
-  0%, 100% { background: rgba(233,69,96,0.04); }
-  50% { background: rgba(233,69,96,0.18); }
-}
-
-/* Status badge */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-family: var(--mono);
-}
-
-.badge-on {
-  background: rgba(0,214,143,0.15);
-  color: var(--success);
-  border: 1px solid rgba(0,214,143,0.3);
-}
-
-.badge-off {
-  background: rgba(233,69,96,0.15);
-  color: var(--accent);
-  border: 1px solid rgba(233,69,96,0.3);
-}
-
-.auto-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.btn-row .btn { flex: 1; }
+  --bg:#0a0a0f; --surface:#111118; --surface2:#18181f;
+  --gold:#c9a84c; --gold2:#e8c97a; --gold-dim:rgba(201,168,76,0.15);
+  --text:#e8e4d8; --text-dim:#7a7568;
+  --green:#4caf7d; --red:#c94c4c;
+  --mono:"Space Mono",monospace;
+  --kurd:"Noto Kufi Arabic",sans-serif;
+  --arabic:"Amiri",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--kurd);background:var(--bg);min-height:100vh;color:var(--text);direction:rtl;overflow-x:hidden;}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,.07) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 20% 80%,rgba(76,175,125,.04) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:0 16px 60px;}
+
+/* header */
+.header{text-align:center;padding:36px 0 16px;}
+.header-arabic{font-family:var(--arabic);font-size:30px;color:var(--gold);line-height:1.4;text-shadow:0 0 30px rgba(201,168,76,.4);}
+.header-city{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-top:4px;}
+
+/* clock */
+.clock-wrap{text-align:center;margin:20px 0 24px;}
+.clock-ring{width:160px;height:160px;margin:0 auto 10px;position:relative;}
+.clock-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.clock-ring .track{fill:none;stroke:rgba(201,168,76,.1);stroke-width:3;}
+.clock-ring .progress{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(201,168,76,.5));}
+.clock-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.clock-time{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--text);letter-spacing:2px;}
+.clock-date{font-size:10px;color:var(--text-dim);margin-top:3px;}
+.hijri-text{font-family:var(--arabic);font-size:15px;color:var(--text-dim);}
+
+/* status */
+.status-card{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:13px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.status-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-dim);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-dim);}
+.status-dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.status-dot.err{background:var(--red);}
+.status-dot.wait{background:var(--gold);box-shadow:0 0 6px var(--gold);}
+
+/* perm banner */
+.perm-banner{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(76,175,125,.05));border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:18px 20px;margin-bottom:14px;text-align:center;}
+.perm-banner p{font-size:13px;color:var(--text);margin-bottom:12px;line-height:1.7;}
+
+/* btn */
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:var(--kurd);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#0a0a0f;box-shadow:0 4px 20px rgba(201,168,76,.3);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(201,168,76,.45);}
+
+/* next card */
+.next-card{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:22px 20px;margin-bottom:14px;position:relative;overflow:hidden;text-align:center;}
+.next-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.next-label{font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;}
+.next-name{font-family:var(--arabic);font-size:38px;color:var(--gold);line-height:1.2;margin-bottom:3px;text-shadow:0 0 20px rgba(201,168,76,.3);}
+.next-name-ku{font-size:12px;color:var(--text-dim);margin-bottom:14px;}
+.next-countdown{font-family:var(--mono);font-size:40px;font-weight:700;color:var(--text);letter-spacing:3px;}
+.next-countdown span{font-size:14px;color:var(--text-dim);vertical-align:middle;margin:0 1px;}
+.next-time-row{margin-top:10px;font-size:12px;color:var(--text-dim);}
+.next-time-row strong{font-family:var(--mono);color:var(--gold2);}
+
+/* prayer list */
+.prayers-card{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:20px;overflow:hidden;margin-bottom:14px;}
+.prayer-row{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .3s;}
+.prayer-row:last-child{border-bottom:none;}
+.prayer-row.is-next{background:rgba(201,168,76,.06);}
+.prayer-row.is-done{opacity:.35;}
+.prayer-indicator{width:8px;height:8px;border-radius:50%;background:var(--text-dim);flex-shrink:0;margin-left:12px;transition:all .3s;}
+.prayer-row.is-next .prayer-indicator{background:var(--gold);box-shadow:0 0 8px var(--gold);animation:pulse 1.5s ease-in-out infinite;}
+.prayer-row.is-done .prayer-indicator{background:var(--green);}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:.6;}}
+.prayer-info{flex:1;}
+.prayer-arabic{font-family:var(--arabic);font-size:19px;color:var(--text);line-height:1.3;}
+.prayer-row.is-next .prayer-arabic{color:var(--gold);}
+.prayer-ku{font-size:10px;color:var(--text-dim);margin-top:1px;}
+.prayer-time{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);}
+.prayer-row.is-next .prayer-time{color:var(--gold2);}
+.prayer-cd{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-align:left;min-width:52px;margin-right:10px;}
+.prayer-row.is-next .prayer-cd{color:var(--gold);}
+
+/* loading / error */
+.loading{text-align:center;padding:40px 20px;color:var(--text-dim);font-size:13px;}
+.loading-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin:0 3px;animation:bounce 1.2s ease-in-out infinite;}
+.loading-dot:nth-child(2){animation-delay:.2s;}.loading-dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4;}50%{transform:translateY(-8px);opacity:1;}}
+.error-box{background:rgba(201,76,76,.1);border:1px solid rgba(201,76,76,.3);border-radius:12px;padding:16px;text-align:center;font-size:13px;color:#e88;margin-bottom:14px;}
+.retry-btn{background:rgba(201,76,76,.2);border:1px solid rgba(201,76,76,.4);color:#e88;padding:8px 20px;border-radius:8px;cursor:pointer;font-family:var(--kurd);font-size:13px;margin-top:10px;}
+
+/* toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid rgba(201,168,76,.3);color:var(--gold2);padding:11px 22px;border-radius:30px;font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:1000;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* overlay */
+.ring-overlay{position:fixed;inset:0;background:rgba(201,168,76,.05);pointer-events:none;z-index:999;opacity:0;transition:opacity .3s;}
+.ring-overlay.active{opacity:1;animation:ring-flash .6s ease-in-out 8;}
+@keyframes ring-flash{0%,100%{background:rgba(201,168,76,.03);}50%{background:rgba(201,168,76,.14);}}
 </style>
 </head>
 <body>
-
 <div class="ring-overlay" id="ringOverlay"></div>
-
+<div class="toast" id="toast"></div>
 <div class="app">
 
-  <!-- Header -->
   <div class="header">
-    <span class="header-icon">⏰</span>
-    <h1>ALARM PRO</h1>
-    <p>ئاگادارکردنەوەی زیرەک</p>
+    <div class="header-arabic">بانگی سلێمانی</div>
+    <div class="header-city">SULAYMANIYAH · IRAQ</div>
   </div>
 
-  <!-- Live Clock -->
-  <div class="live-clock">
-    <div class="clock-display" id="clockDisplay">--:--:--</div>
-    <div class="clock-date" id="clockDate"></div>
+  <div class="perm-banner" id="permBanner" style="display:none">
+    <p>بۆ وەرگرتنی ئاگادارکردنەوەی بانگ<br><strong style="color:var(--gold)">یەک جار</strong> ڕێگەپێدان پێویستە</p>
+    <button class="btn btn-gold" onclick="askPermOnce()">🔔 ڕێگەپێدان بدە</button>
   </div>
 
-  <!-- AUTO ALARM SECTION -->
-  <div class="card auto-section">
-    <div class="auto-header">
-      <div class="auto-label">
-        <span>🤖</span> ئاگادارکردنەوەی خۆکار
-      </div>
-      <div id="autoStatusBadge" class="status-badge badge-off">⬤ ئوف</div>
-    </div>
-
-    <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">
-      ٥ ئاگادارکردنەوەی خۆکار لە کاتی دیاریکراو — <strong style="color:var(--text)">٠٥:٠٠ · ١٢:٠٠ · ١٥:٣٠ · ١٨:٠٠ · ٢٢:٠٠</strong>
-    </p>
-
-    <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <label style="flex:1;cursor:pointer;">
-        <input type="radio" name="autoMode" id="modeTest" value="test" checked style="width:auto;margin-left:6px;">
-        <span style="font-size:13px;">⚡ تاقیکردنەوە (٣٠چ)</span>
-      </label>
-      <label style="flex:1;cursor:pointer;">
-        <input type="radio" name="autoMode" id="modeReal" value="real" style="width:auto;margin-left:6px;">
-        <span style="font-size:13px;">⏰ ڕاستەقینە (٢خ)</span>
-      </label>
-    </div>
-
-    <!-- Progress -->
-    <div class="progress-wrap" id="progressWrap" style="display:none">
-      <div class="progress-label">
-        <span id="progressLabel">پێشکەوتن</span>
-        <span id="progressPct">0%</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  <div class="clock-wrap">
+    <div class="clock-ring">
+      <svg viewBox="0 0 160 160">
+        <circle class="track" cx="80" cy="80" r="72"/>
+        <circle class="progress" id="clockRing" cx="80" cy="80" r="72" stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+      </svg>
+      <div class="clock-inner">
+        <div class="clock-time" id="clockTime">--:--</div>
+        <div class="clock-date" id="clockDate"></div>
       </div>
     </div>
-
-    <!-- Timeline -->
-    <div class="timeline" id="autoTimeline"></div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" id="startAutoBtn" onclick="startAutoAlarms()">▶ دەستپێکردن</button>
-      <button class="btn btn-secondary" id="stopAutoBtn" onclick="stopAutoAlarms()" style="display:none">⏹ وەستاندن</button>
-    </div>
+    <div class="hijri-text" id="hijriDate">—</div>
   </div>
 
-  <!-- Manual Alarm -->
-  <div class="card">
-    <div class="card-title"><span>✍️</span> دیاریکردنی دەستی</div>
-
-    <div class="field">
-      <label>ناونیشان</label>
-      <input type="text" id="title" placeholder="بۆ نموونە: کاتی نوێژ">
-    </div>
-
-    <div class="field">
-      <label>پەیام</label>
-      <textarea id="message" placeholder="پەیامی ئاگادارکردنەوە..."></textarea>
-    </div>
-
-    <div class="field">
-      <label>کات</label>
-      <div class="time-row">
-        <input type="time" id="time">
-        <select id="ampm">
-          <option value="AM">پێش نیوەڕۆ</option>
-          <option value="PM">پاش نیوەڕۆ</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="toggle-row">
-      <span class="toggle-label">🔊 دەنگ</span>
-      <input type="checkbox" class="toggle" id="sound" checked>
-    </div>
-    <div class="toggle-row">
-      <span class="toggle-label">📳 هەژاندن</span>
-      <input type="checkbox" class="toggle" id="vibrate" checked>
-    </div>
-
-    <button class="btn btn-primary" onclick="setAlarm()" style="margin-top:14px;">📅 زیادکردنی ئاگادارکردنەوە</button>
-    <button class="btn btn-warning" onclick="testAlarm()" style="margin-top:10px;">🧪 تاقیکردنەوە</button>
+  <div class="status-card">
+    <div class="status-item"><div class="status-dot" id="dotApi"></div><span id="lblApi">بارکردن...</span></div>
+    <div class="status-item"><div class="status-dot" id="dotNotif"></div><span id="lblNotif">ئاگادارکردنەوە</span></div>
+    <div class="status-item"><div class="status-dot ok" id="dotSound"></div><span>دەنگی بانگ</span></div>
   </div>
 
-  <!-- Alarm List -->
-  <div class="card">
-    <div class="card-title"><span>📋</span> ئاگادارکردنەوە دیاریکراوەکان</div>
-    <div id="alarmList">
-      <div class="empty-state">هیچ ئاگادارکردنەوەیەک نییە</div>
-    </div>
+  <div id="loadingBox" class="loading">
+    <span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span>
+    <div style="margin-top:14px">کاتی بانگەکان بارئەکرێت...</div>
   </div>
+
+  <div id="errorBox" class="error-box" style="display:none">
+    ❌ کێشە لە بارکردنی کاتەکان<br>
+    <button class="retry-btn" onclick="loadPrayerTimes()">🔄 دووبارە هەوڵبدەرەوە</button>
+  </div>
+
+  <div id="nextCard" class="next-card" style="display:none">
+    <div class="next-label">بانگی داهاتوو</div>
+    <div class="next-name" id="nextName">—</div>
+    <div class="next-name-ku" id="nextNameKu">—</div>
+    <div class="next-countdown" id="nextCountdown">--<span>:</span>--<span>:</span>--</div>
+    <div class="next-time-row">کاتی بانگ: <strong id="nextTime">--:--</strong></div>
+  </div>
+
+  <div id="prayerList" class="prayers-card" style="display:none"></div>
 
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-let alarms = [];
-let autoRunning = false;
-let autoTimeouts = [];
-let autoStartTime = null;
-let AUTO_INTERVAL = 30 * 1000; // default: 30 seconds (test mode)
-const AUTO_COUNT = 5;
+const LAT       = 35.5651;
+const LNG       = 45.4292;
+const METHOD    = 4;
+const SCHOOL    = 1;
+const PLUS_MIN  = 1;
+const ADHAN_URL = "https://firebasestorage.googleapis.com/v0/b/drood-762d5.firebasestorage.app/o/ADHAN-BANG%2Fadhana-makha2-mp3.mp3?alt=media&token=43e507c3-74ba-4f92-bed7-0614da7f4d65";
 
-// Auto alarm times (relative, in ms from start)
-let autoAlarmTimes = [];
-let autoFiredCount = 0;
-let autoIntervalId = null;
-
-// ===== FIXED ALARM TIMES (لەکۆددا ثابتن) =====
-const FIXED_ALARMS = [
-  { hour: 5,  minute: 0,  label: 'بەیانی' },
-  { hour: 12, minute: 0,  label: 'نیوەڕۆ'  },
-  { hour: 15, minute: 30, label: 'دوای نیوەڕۆ' },
-  { hour: 18, minute: 0,  label: 'ئێوارە'  },
-  { hour: 22, minute: 0,  label: 'شەو'     },
+const PRAYERS = [
+  {key:"Fajr",    arabic:"الفجر",  ku:"بەیانی"},
+  {key:"Dhuhr",   arabic:"الظهر",  ku:"نیوەڕۆ"},
+  {key:"Asr",     arabic:"العصر",  ku:"ئەسر"},
+  {key:"Maghrib", arabic:"المغرب", ku:"ئێوارە"},
+  {key:"Isha",    arabic:"العشاء", ku:"شەو"},
 ];
 
-// Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(reg => console.log('SW تۆمارکرا'))
-    .catch(err => console.log('SW هەڵە:', err));
-}
+let todayTimes = null;
+let scheduledTimers = [];
+let currentAudio = null;
+let volumeTimer  = null;
+let audioUnlocked = false;
 
-// ڕێگەپێدان — تەنها لەکاتی کلیکی بەکارهێنەر داوا دەکرێت
-function requestNotificationPermission(callback) {
-  if (Notification.permission === "granted") {
-    if (callback) callback(true);
-    return;
-  }
-  if (Notification.permission === "denied") {
-    showToast("❌ ڕێگەپێدان بلۆک کراوە — لە ڕێکخستنەکانی مۆبایل چالاک بکەرەوە", false);
-    if (callback) callback(false);
-    return;
-  }
-  Notification.requestPermission().then(p => {
-    if (p === "granted") {
-      showToast("✅ ڕێگەپێدان وەرگیرا!", true);
-      if (callback) callback(true);
-    } else {
-      showToast("⚠️ ڕێگەپێدانی ئاگادارکردنەوە پێویستە!", false);
-      if (callback) callback(false);
-    }
+// unlock audio
+function unlockAudio(){
+  if(audioUnlocked) return; audioUnlocked=true;
+  const ctx=new(window.AudioContext||window.webkitAudioContext)();
+  const b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();
+  s.buffer=b;s.connect(ctx.destination);s.start(0);ctx.resume();
+}
+document.addEventListener("touchstart",unlockAudio,{once:true});
+document.addEventListener("click",unlockAudio,{once:true});
+
+// permission
+function initPermBanner(){
+  if(Notification.permission==="default") document.getElementById("permBanner").style.display="block";
+  updateNotifDot();
+}
+function askPermOnce(){
+  Notification.requestPermission().then(p=>{
+    document.getElementById("permBanner").style.display="none";
+    updateNotifDot();
+    showToast(p==="granted"?"✅ ڕێگەپێدان وەرگیرا!":"⚠️ ڕێگەپێدان نەدرا");
   });
 }
-
-// ========== CLOCK ==========
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
-  
-  const days = ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','ھەینی','شەممە'];
-  const months = ['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەممووز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
-  document.getElementById('clockDate').textContent = 
-    `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+function updateNotifDot(){
+  const dot=document.getElementById("dotNotif"),lbl=document.getElementById("lblNotif");
+  if(Notification.permission==="granted"){dot.className="status-dot ok";lbl.textContent="ئاگادارکردنەوە چالاکە";}
+  else if(Notification.permission==="denied"){dot.className="status-dot err";lbl.textContent="ئاگادارکردنەوە بلۆکە";}
+  else{dot.className="status-dot wait";lbl.textContent="ڕێگەپێدان پێویستە";}
 }
 
-setInterval(updateClock, 1000);
+// clock
+function updateClock(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,"0"),m=String(now.getMinutes()).padStart(2,"0");
+  document.getElementById("clockTime").textContent=h+":"+m;
+  const days=["یەکشەممە","دووشەممە","سێشەممە","چوارشەممە","پێنجشەممە","هەینی","شەممە"];
+  const months=["کانوونی دووەم","شوبات","ئازار","نیسان","ئایار","حوزەیران","تەممووز","ئاب","ئەیلوول","تشرینی یەکەم","تشرینی دووەم","کانوونی یەکەم"];
+  document.getElementById("clockDate").textContent=days[now.getDay()]+"، "+now.getDate()+" "+months[now.getMonth()];
+  const circ=2*Math.PI*72;
+  document.getElementById("clockRing").style.strokeDashoffset=circ*(1-now.getSeconds()/60);
+  updateCountdowns();
+}
+setInterval(updateClock,1000);
 updateClock();
 
-// ========== AUTO ALARMS ==========
-function buildAutoTimeline() {
-  const container = document.getElementById('autoTimeline');
-  container.innerHTML = '';
+// load prayer times
+async function loadPrayerTimes(date){
+  document.getElementById("loadingBox").style.display="block";
+  document.getElementById("errorBox").style.display="none";
+  document.getElementById("nextCard").style.display="none";
+  document.getElementById("prayerList").style.display="none";
 
-  for (let i = 0; i < AUTO_COUNT; i++) {
-    const fa = FIXED_ALARMS[i];
-    const hh = String(fa.hour).padStart(2,'0');
-    const mm = String(fa.minute).padStart(2,'0');
+  const d=date||new Date();
+  const dd=String(d.getDate()).padStart(2,"0");
+  const mm=String(d.getMonth()+1).padStart(2,"0");
+  const yyyy=d.getFullYear();
+  const url="https://api.aladhan.com/v1/timings/"+dd+"-"+mm+"-"+yyyy+"?latitude="+LAT+"&longitude="+LNG+"&method="+METHOD+"&school="+SCHOOL;
 
-    const item = document.createElement('div');
-    item.className = 'timeline-item';
-    item.id = `tl-${i}`;
+  try{
+    const res=await fetch(url);
+    const json=await res.json();
+    if(json.code!==200) throw new Error("API error");
 
-    const fired = autoRunning && i < autoFiredCount;
-    const active = autoRunning && i === autoFiredCount;
+    const timings=json.data.timings;
+    const hijri=json.data.date.hijri;
 
-    if (fired) item.classList.add('done');
-    if (active) item.classList.add('active');
-
-    // countdown
-    let cdText = '';
-    if (fired) {
-      cdText = '✓';
-    } else if (autoRunning && autoAlarmTimes[i]) {
-      const rem = autoAlarmTimes[i] - Date.now();
-      if (rem > 0) {
-        const ms = Math.floor(rem / 60000);
-        const ss = Math.floor((rem % 60000) / 1000);
-        cdText = `${ms}:${String(ss).padStart(2,'0')}`;
-      } else {
-        cdText = '🔔';
-      }
+    todayTimes={};
+    for(const p of PRAYERS){
+      const parts=timings[p.key].split(":").map(Number);
+      const dt=new Date(d);
+      dt.setHours(parts[0],parts[1]+PLUS_MIN,0,0);
+      todayTimes[p.key]=dt;
     }
 
-    item.innerHTML = `
-      <div class="timeline-dot"></div>
-      <div class="timeline-info">
-        <div class="timeline-time">${fired ? '✓ تاقیکرایەوە' : `${hh}:${mm}`}</div>
-        <div class="timeline-label">ئاگادارکردنەوەی ${i+1} — ${fa.label}</div>
-      </div>
-      <div class="timeline-countdown" id="cd-${i}">${cdText}</div>
-    `;
-    container.appendChild(item);
+    document.getElementById("hijriDate").textContent=hijri.day+" "+hijri.month.ar+" "+hijri.year+" هـ";
+    document.getElementById("dotApi").className="status-dot ok";
+    document.getElementById("lblApi").textContent="کاتەکان بارکرا ✓";
+    document.getElementById("loadingBox").style.display="none";
+    document.getElementById("nextCard").style.display="block";
+    document.getElementById("prayerList").style.display="block";
+
+    scheduledTimers.forEach(t=>clearTimeout(t));
+    scheduledTimers=[];
+    scheduleAlarms();
+    renderPrayerList();
+
+  }catch(e){
+    document.getElementById("loadingBox").style.display="none";
+    document.getElementById("errorBox").style.display="block";
+    document.getElementById("dotApi").className="status-dot err";
+    document.getElementById("lblApi").textContent="کێشە لە API";
   }
 }
 
-function startAutoAlarms() {
-  if (autoRunning) return;
-
-  // ڕێگەپێدان لەکاتی کلیک داوا بکە
-  requestNotificationPermission(granted => {
-    if (!granted) return;
-    _doStartAutoAlarms();
-  });
+function scheduleAlarms(){
+  const now=Date.now();
+  for(const p of PRAYERS){
+    const dt=todayTimes[p.key];
+    const delay=dt.getTime()-now;
+    if(delay>0){
+      const t=setTimeout(()=>fireAlarm(p),delay);
+      scheduledTimers.push(t);
+    }
+  }
+  // reload at midnight
+  const tomorrow=new Date();
+  tomorrow.setDate(tomorrow.getDate()+1);
+  tomorrow.setHours(0,1,0,0);
+  const mt=setTimeout(()=>loadPrayerTimes(tomorrow),tomorrow.getTime()-now);
+  scheduledTimers.push(mt);
 }
 
-function _doStartAutoAlarms() {
-  autoRunning = true;
-  autoStartTime = Date.now();
-  autoFiredCount = 0;
-  autoTimeouts = [];
-  autoAlarmTimes = [];
+function fireAlarm(prayer){
+  playAdhan();
+  sendNotification("🕌 "+prayer.arabic,"کاتی بانگی "+prayer.ku+" گەیشت");
+  showToast("🔔 کاتی بانگی "+prayer.ku);
+  const o=document.getElementById("ringOverlay");
+  o.classList.add("active");
+  setTimeout(()=>o.classList.remove("active"),5000);
+  renderPrayerList();
+}
 
-  document.getElementById('startAutoBtn').style.display = 'none';
-  document.getElementById('stopAutoBtn').style.display = 'block';
-  document.getElementById('autoStatusBadge').textContent = '⬤ چالاک';
-  document.getElementById('autoStatusBadge').className = 'status-badge badge-on';
-  document.getElementById('progressWrap').style.display = 'block';
-  document.getElementById('modeTest').disabled = true;
-  document.getElementById('modeReal').disabled = true;
+function playAdhan(){
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
+  if(volumeTimer){clearInterval(volumeTimer);volumeTimer=null;}
+  const STEPS=[0.35,0.55,0.75,0.9,1.0];
+  let step=0;
+  fetch(ADHAN_URL)
+    .then(r=>r.blob())
+    .then(blob=>{
+      const blobUrl=URL.createObjectURL(blob);
+      currentAudio=new Audio(blobUrl);
+      currentAudio.volume=STEPS[0];
+      currentAudio.play().catch(()=>fallbackBeep());
+      volumeTimer=setInterval(()=>{
+        step++;
+        if(currentAudio) currentAudio.volume=STEPS[Math.min(step,STEPS.length-1)];
+        if(step>=STEPS.length-1){clearInterval(volumeTimer);volumeTimer=null;}
+      },30000);
+    })
+    .catch(()=>fallbackBeep());
+}
 
-  const useTestMode = document.getElementById('modeTest').checked;
-  AUTO_INTERVAL = useTestMode ? 30 * 1000 : 2 * 60 * 1000;
+function fallbackBeep(){
+  const ctx=new(window.AudioContext||window.webkitAudioContext)();
+  const b=(f,s,d)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.frequency.value=f;o.type="sine";
+    g.gain.setValueAtTime(0.4,ctx.currentTime+s);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+s+d);
+    o.start(ctx.currentTime+s);o.stop(ctx.currentTime+s+d);
+  };
+  b(660,0,.3);b(880,.4,.3);b(660,.8,.3);b(880,1.2,.6);
+}
 
-  // بۆ هەر ئاگادارکردنەوەیەک کاتی تاقیکردنەوە حساب بکە
-  for (let i = 0; i < AUTO_COUNT; i++) {
-    let targetMs;
-    if (useTestMode) {
-      // مودی تاقیکردنەوە: هەر ٣٠ چرکە
-      targetMs = autoStartTime + (i + 1) * AUTO_INTERVAL;
-    } else {
-      // مودی ڕاستەقینە: کاتی ثابت لەکۆد
-      const fa = FIXED_ALARMS[i];
-      const now = new Date();
-      const target = new Date();
-      target.setHours(fa.hour, fa.minute, 0, 0);
-      if (target <= now) target.setDate(target.getDate() + 1);
-      targetMs = target.getTime();
-    }
-    autoAlarmTimes.push(targetMs);
+function sendNotification(title,body){
+  if(Notification.permission!=="granted") return;
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(reg) reg.showNotification(title,{body,icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png",vibrate:[400,100,400,100,800],requireInteraction:true,tag:"azan-"+Date.now()});
+    else try{new Notification(title,{body});}catch(e){}
+  }).catch(()=>{try{new Notification(title,{body});}catch(e){}});
+}
 
-    const idx = i;
-    const delay = targetMs - Date.now();
-    const t = setTimeout(() => {
-      autoFiredCount = idx + 1;
-      triggerAutoAlarm(idx + 1);
-      updateProgress();
-      buildAutoTimeline();
-      if (autoFiredCount >= AUTO_COUNT) {
-        setTimeout(() => stopAutoAlarms(true), 2000);
-      }
-    }, delay);
-    autoTimeouts.push(t);
+function renderPrayerList(){
+  if(!todayTimes) return;
+  const now=new Date();
+  const list=document.getElementById("prayerList");
+  let nextKey=null;
+  for(const p of PRAYERS){ if(todayTimes[p.key]>now){nextKey=p.key;break;} }
+  list.innerHTML=PRAYERS.map(p=>{
+    const dt=todayTimes[p.key];
+    const hh=String(dt.getHours()).padStart(2,"0");
+    const mn=String(dt.getMinutes()).padStart(2,"0");
+    const done=dt<=now, isNext=p.key===nextKey;
+    let cls="prayer-row";
+    if(isNext) cls+=" is-next";
+    if(done)   cls+=" is-done";
+    return "<div class='"+cls+"' id='row-"+p.key+"'><div class='prayer-indicator'></div><div class='prayer-info'><div class='prayer-arabic'>"+p.arabic+"</div><div class='prayer-ku'>"+p.ku+"</div></div><div class='prayer-cd' id='cd-"+p.key+"'></div><div class='prayer-time'>"+hh+":"+mn+"</div></div>";
+  }).join("");
+}
+
+function updateCountdowns(){
+  if(!todayTimes) return;
+  const now=new Date();
+  let nextPrayer=null;
+  for(const p of PRAYERS){ if(todayTimes[p.key]>now){nextPrayer=p;break;} }
+
+  for(const p of PRAYERS){
+    const cdEl=document.getElementById("cd-"+p.key);
+    if(!cdEl) continue;
+    const rem=todayTimes[p.key]-now;
+    if(rem<=0){cdEl.textContent="✓";continue;}
+    const hh=Math.floor(rem/3600000),mm=Math.floor((rem%3600000)/60000),ss=Math.floor((rem%60000)/1000);
+    cdEl.textContent=hh>0?hh+":"+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0"):String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
   }
 
-  autoIntervalId = setInterval(() => {
-    buildAutoTimeline();
-    updateCountdowns();
-  }, 1000);
-
-  buildAutoTimeline();
-  updateProgress();
-  const modeLabel = useTestMode ? '٣٠ چرکە' : 'کاتی دیاریکراو';
-  showToast(`✅ دەستی پێکرد — ${modeLabel}`, true);
-}
-
-function updateCountdowns() {
-  // buildAutoTimeline handles display; this just triggers a rebuild
-  buildAutoTimeline();
-}
-
-function updateProgress() {
-  const pct = Math.min(100, Math.round((autoFiredCount / AUTO_COUNT) * 100));
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressLabel').textContent = 
-    autoFiredCount < AUTO_COUNT 
-      ? `${autoFiredCount} لە ${AUTO_COUNT} تاقیکرایەوە`
-      : '✅ هەموو تاقیکرایەوە!';
-}
-
-function stopAutoAlarms(completed = false) {
-  autoRunning = false;
-  autoTimeouts.forEach(t => clearTimeout(t));
-  autoTimeouts = [];
-  if (autoIntervalId) { clearInterval(autoIntervalId); autoIntervalId = null; }
-
-  document.getElementById('startAutoBtn').style.display = 'block';
-  document.getElementById('stopAutoBtn').style.display = 'none';
-  document.getElementById('autoStatusBadge').textContent = '⬤ ئوف';
-  document.getElementById('autoStatusBadge').className = 'status-badge badge-off';
-  document.getElementById('modeTest').disabled = false;
-  document.getElementById('modeReal').disabled = false;
-
-  if (!completed) {
-    document.getElementById('progressWrap').style.display = 'none';
-    autoFiredCount = 0;
-    buildAutoTimeline();
-    showToast("⏹ ئاگادارکردنەوەی خۆکار وەستا", false);
+  if(nextPrayer){
+    const dt=todayTimes[nextPrayer.key],rem=dt-now;
+    const hh=Math.floor(rem/3600000),mm=Math.floor((rem%3600000)/60000),ss=Math.floor((rem%60000)/1000);
+    document.getElementById("nextName").textContent=nextPrayer.arabic;
+    document.getElementById("nextNameKu").textContent=nextPrayer.ku;
+    document.getElementById("nextCountdown").innerHTML=String(hh).padStart(2,"0")+"<span>:</span>"+String(mm).padStart(2,"0")+"<span>:</span>"+String(ss).padStart(2,"0");
+    document.getElementById("nextTime").textContent=String(dt.getHours()).padStart(2,"0")+":"+String(dt.getMinutes()).padStart(2,"0");
   } else {
-    showToast("🎉 هەموو ٥ ئاگادارکردنەوەکان تاقیکرایەوە!", true);
+    document.getElementById("nextName").textContent="هەموو بانگەکان";
+    document.getElementById("nextNameKu").textContent="تەواوبوون";
+    document.getElementById("nextCountdown").textContent="—";
   }
 }
 
-function triggerAutoAlarm(index) {
-  const title = `🤖 ئاگادارکردنەوەی خۆکار #${index}`;
-  const message = `ئاگادارکردنەوەی ${index} لە ${AUTO_COUNT} — ئەپ بەڕێوەدەچێت ✅`;
-  
-  playSound();
-  vibratePhone();
-  sendNotification(title, message);
-  showToast(`🔔 ئاگادارکردنەوەی ${index} گەیشت!`, true);
-  
-  // Flash overlay
-  const overlay = document.getElementById('ringOverlay');
-  overlay.classList.add('active');
-  setTimeout(() => overlay.classList.remove('active'), 3500);
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove("show"),3500);
 }
 
-// Initialize timeline
-buildAutoTimeline();
-
-// ========== SOUND & VIBRATE ==========
-function playSound() {
-  if (!document.getElementById("sound").checked) return;
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  
-  function beep(freq, start, dur) {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    osc.type = 'sine';
-    gain.gain.setValueAtTime(0.5, ctx.currentTime + start);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-    osc.start(ctx.currentTime + start);
-    osc.stop(ctx.currentTime + start + dur);
-  }
-
-  // Alarm melody
-  beep(880, 0, 0.2);
-  beep(1100, 0.25, 0.2);
-  beep(880, 0.5, 0.2);
-  beep(1100, 0.75, 0.4);
-  beep(880, 1.3, 0.2);
-  beep(1100, 1.55, 0.2);
-  beep(880, 1.8, 0.5);
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./sw.js").catch(e=>console.warn("SW:",e));
 }
 
-function vibratePhone() {
-  if (document.getElementById("vibrate").checked && navigator.vibrate) {
-    navigator.vibrate([400, 150, 400, 150, 800, 200, 400, 150, 400]);
-  }
-}
-
-function sendNotification(title, body) {
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission();
-    return;
-  }
-  
-  // Try via Service Worker first (works when screen is locked)
-  navigator.serviceWorker.getRegistration().then(reg => {
-    if (reg) {
-      reg.showNotification(title, {
-        body,
-        icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
-        vibrate: [300, 100, 300, 100, 600],
-        requireInteraction: true,
-        tag: "alarm-" + Date.now()
-      });
-    } else {
-      // Fallback: basic Notification
-      try { new Notification(title, { body }); } catch(e) {}
-    }
-  }).catch(() => {
-    try { new Notification(title, { body }); } catch(e) {}
-  });
-}
-
-// ========== MANUAL ALARM ==========
-function setAlarm() {
-  let title = document.getElementById("title").value.trim();
-  let message = document.getElementById("message").value.trim();
-  let time = document.getElementById("time").value;
-  let ampm = document.getElementById("ampm").value;
-
-  if (!title) { showToast("تکایە ناونیشان بنووسە", false); return; }
-  if (!message) { showToast("تکایە پەیام بنووسە", false); return; }
-  if (!time) { showToast("تکایە کات دیاری بکە", false); return; }
-
-  let [hours, minutes] = time.split(":").map(Number);
-  if (ampm === "PM" && hours !== 12) hours += 12;
-  if (ampm === "AM" && hours === 12) hours = 0;
-
-  let now = new Date();
-  let alarm = new Date();
-  alarm.setHours(hours, minutes, 0, 0);
-  if (alarm <= now) alarm.setDate(alarm.getDate() + 1);
-
-  const hh = String(alarm.getHours()).padStart(2,'0');
-  const mm = String(alarm.getMinutes()).padStart(2,'0');
-
-  alarms.push({
-    id: Date.now(),
-    title, message,
-    time: alarm.getTime(),
-    timeStr: `${hh}:${mm}`,
-    dateStr: alarm.toLocaleDateString("ku")
-  });
-
-  saveAlarms();
-  updateAlarmList();
-  showToast(`✅ ئاگادارکردنەوە بۆ ${hh}:${mm} دیاری کرا`, true);
-
-  document.getElementById("title").value = "";
-  document.getElementById("message").value = "";
-  document.getElementById("time").value = "";
-}
-
-function testAlarm() {
-  playSound();
-  vibratePhone();
-  sendNotification("🧪 تاقیکردنەوە", "ئەگەر دەنگت بیست، ئەپ کاردەکات!");
-  showToast("🔔 تاقیکردنەوە نێردرا!", true);
-  const overlay = document.getElementById('ringOverlay');
-  overlay.classList.add('active');
-  setTimeout(() => overlay.classList.remove('active'), 3500);
-}
-
-function saveAlarms() {
-  localStorage.setItem("alarms", JSON.stringify(alarms));
-}
-
-function loadAlarms() {
-  const saved = localStorage.getItem("alarms");
-  if (saved) { alarms = JSON.parse(saved); updateAlarmList(); }
-}
-
-function updateAlarmList() {
-  const container = document.getElementById("alarmList");
-  if (alarms.length === 0) {
-    container.innerHTML = '<div class="empty-state">📭 هیچ ئاگادارکردنەوەیەک نییە</div>';
-    return;
-  }
-  container.innerHTML = alarms.map((a, i) => `
-    <div class="alarm-item">
-      <div class="alarm-dot"></div>
-      <div class="alarm-info">
-        <div class="alarm-title-text">${escapeHtml(a.title)}</div>
-        <div class="alarm-time-text">${a.timeStr} — ${a.dateStr} | ${escapeHtml(a.message)}</div>
-      </div>
-      <button class="delete-btn" onclick="deleteAlarm(${i})">🗑️</button>
-    </div>
-  `).join('');
-}
-
-function escapeHtml(text) {
-  if (!text) return "";
-  const d = document.createElement("div");
-  d.textContent = text;
-  return d.innerHTML;
-}
-
-function deleteAlarm(index) {
-  alarms.splice(index, 1);
-  saveAlarms();
-  updateAlarmList();
-  showToast("ئاگادارکردنەوە لابرا", false);
-}
-
-function showToast(msg, success) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = `toast ${success ? 'success' : 'error'} show`;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.className = `toast ${success ? 'success' : 'error'}`; }, 3500);
-}
-
-// ========== CHECKER ==========
-setInterval(() => {
-  const now = Date.now();
-  let changed = false;
-  for (let i = alarms.length - 1; i >= 0; i--) {
-    if (now >= alarms[i].time) {
-      playSound();
-      vibratePhone();
-      sendNotification(alarms[i].title, alarms[i].message);
-      showToast(`🔔 ${alarms[i].title} — کات گەیشت!`, true);
-      const overlay = document.getElementById('ringOverlay');
-      overlay.classList.add('active');
-      setTimeout(() => overlay.classList.remove('active'), 3500);
-      alarms.splice(i, 1);
-      changed = true;
-    }
-  }
-  if (changed) { saveAlarms(); updateAlarmList(); }
-}, 1000);
-
-loadAlarms();
+initPermBanner();
+loadPrayerTimes();
 </script>
 </body>
 </html>
