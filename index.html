@@ -7,167 +7,151 @@
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --bg:#080810;--card:#10101a;--card2:#181826;--accent:#e94560;--accent2:#f5a623;
-      --text:#f0f0f8;--muted:#55556a;--green:#00d9a3;--border:#1e1e30;
-      --glow:rgba(233,69,96,0.3);--h:100dvh;
+      --bg:#080810;--card:#0f0f1a;--card2:#161625;--accent:#e94560;--accent2:#f5a623;
+      --text:#f0f0f8;--muted:#4a4a62;--green:#00d9a3;--border:#1a1a2e;
+      --glow:rgba(233,69,96,0.28);
     }
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%;overflow:hidden;font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text)}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    html,body{width:100%;height:100%;overflow:hidden;font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text)}
 
-    /* BG orbs */
+    /* SPLASH */
+    #splash{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .6s ease}
+    #splash.fade{opacity:0;pointer-events:none}
+    .splash-logo{width:110px;height:110px;object-fit:contain;animation:splashPop .6s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes splashPop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+    .splash-name{font-size:26px;font-weight:800;background:linear-gradient(130deg,#fff 20%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .5s .3s both}
+    .splash-sub{font-size:12px;color:var(--muted);animation:fadeUp .5s .5s both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* BG ORBS */
     .orbs{position:fixed;inset:0;z-index:0;pointer-events:none}
-    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.08}
-    .o1{width:320px;height:320px;background:var(--accent);top:-80px;right:-80px}
-    .o2{width:220px;height:220px;background:#5c35c5;bottom:-40px;left:-60px}
-    .o3{width:120px;height:120px;background:var(--accent2);top:40%;left:40%}
+    .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.07}
+    .o1{width:260px;height:260px;background:var(--accent);top:-60px;right:-60px}
+    .o2{width:180px;height:180px;background:#5c35c5;bottom:-30px;left:-50px}
+    .o3{width:100px;height:100px;background:var(--accent2);top:45%;left:45%}
 
-    /* ROOT LAYOUT — 3 columns: header | main | list */
-    .app{
-      position:relative;z-index:1;
-      display:grid;
-      grid-template-rows:auto 1fr;
-      height:100dvh;
-      max-width:430px;
-      margin:0 auto;
-    }
+    /* APP SHELL */
+    .app{position:relative;z-index:1;display:flex;flex-direction:column;width:100%;height:100dvh;max-width:430px;margin:0 auto;overflow:hidden}
 
-    /* ─── HEADER ─── */
-    .hdr{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:10px 14px 6px;
-      border-bottom:1px solid var(--border);
-    }
-    .logo-area{display:flex;align-items:center;gap:8px}
-    .logo-img{width:32px;height:32px;object-fit:contain}
-    .logo-text{font-size:15px;font-weight:800;background:linear-gradient(130deg,#fff 20%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    /* HEADER */
+    .hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:8px 12px 6px;border-bottom:1px solid var(--border)}
+    .logo-area{display:flex;align-items:center;gap:7px}
+    .logo-sm{width:26px;height:26px;object-fit:contain;border-radius:6px}
+    .logo-text{font-size:14px;font-weight:800;background:linear-gradient(130deg,#fff 20%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .clock-area{text-align:left}
-    .live-clock{font-size:22px;font-weight:800;letter-spacing:-0.5px;line-height:1;background:linear-gradient(140deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .live-date{font-size:9px;color:var(--muted);margin-top:1px}
+    .live-clock{font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1;background:linear-gradient(140deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .live-date{font-size:8px;color:var(--muted);margin-top:1px}
 
-    /* ─── BODY: two panels side by side ─── */
-    .body{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:0;
-      overflow:hidden;
-      min-height:0;
-    }
+    /* BODY */
+    .body{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
 
-    /* ─── LEFT PANEL: Add alarm ─── */
-    .panel-add{
-      border-left:1px solid var(--border);
-      display:flex;flex-direction:column;
-      overflow-y:auto;
-      scrollbar-width:none;
-      padding:8px 10px;
-      gap:7px;
-    }
-    .panel-add::-webkit-scrollbar{display:none}
+    /* PANELS */
+    .panel{display:flex;flex-direction:column;overflow:hidden;padding:6px 8px;gap:5px}
+    .panel-add{border-left:1px solid var(--border)}
+    .panel-list{overflow-y:auto;scrollbar-width:none}
+    .panel-list::-webkit-scrollbar{display:none}
+    .ptitle{font-size:8px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;flex-shrink:0}
 
-    .panel-title{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+    /* TABS */
+    .mode-tabs{display:flex;gap:4px;flex-shrink:0}
+    .mtab{flex:1;padding:5px 2px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+    .mtab.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 10px var(--glow)}
 
-    /* Mode tabs */
-    .mode-tabs{display:flex;gap:5px}
-    .mtab{flex:1;padding:6px 4px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
-    .mtab.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 3px 12px var(--glow)}
-
-    /* Drum picker — compact */
-    .tp-row{display:flex;align-items:center;justify-content:center;gap:4px}
-    .tp-col{display:flex;flex-direction:column;align-items:center;gap:3px}
-    .tp-col span{font-size:8px;color:var(--muted);letter-spacing:1px}
-    .drum{background:var(--card2);border:1px solid var(--border);border-radius:10px;overflow:hidden;width:62px;height:90px;position:relative;cursor:ns-resize;user-select:none}
+    /* DRUM */
+    .tp-row{display:flex;align-items:center;justify-content:center;gap:4px;flex-shrink:0}
+    .tp-col{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .tp-col span{font-size:7px;color:var(--muted);letter-spacing:1px}
+    .drum{background:var(--card2);border:1px solid var(--border);border-radius:9px;overflow:hidden;width:58px;height:78px;position:relative;cursor:ns-resize;user-select:none;flex-shrink:0}
     .drum-inner{position:absolute;width:100%;transition:transform .1s}
-    .drum-item{height:30px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--muted);transition:color .1s,font-size .1s}
-    .drum-item.sel{color:var(--text);font-size:24px}
-    .drum::before,.drum::after{content:'';position:absolute;left:0;right:0;height:26px;z-index:2;pointer-events:none}
+    .drum-item{height:26px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--muted);transition:color .1s,font-size .1s}
+    .drum-item.sel{color:var(--text);font-size:22px}
+    .drum::before,.drum::after{content:'';position:absolute;left:0;right:0;height:22px;z-index:2;pointer-events:none}
     .drum::before{top:0;background:linear-gradient(to bottom,var(--card2),transparent)}
     .drum::after{bottom:0;background:linear-gradient(to top,var(--card2),transparent)}
-    .drum-line{position:absolute;left:6px;right:6px;height:1px;background:var(--accent);opacity:.4;z-index:3}
-    .drum-line.t{top:30px}.drum-line.b{bottom:30px}
-    .tp-sep{font-size:22px;font-weight:800;color:var(--accent);margin-top:2px}
+    .drum-line{position:absolute;left:5px;right:5px;height:1px;background:var(--accent);opacity:.4;z-index:3}
+    .drum-line.t{top:26px}.drum-line.b{bottom:26px}
+    .tp-sep{font-size:20px;font-weight:800;color:var(--accent)}
 
-    /* Timer picker */
-    .timer-wrap{display:none;flex-direction:column;align-items:center;gap:6px}
+    /* TIMER */
+    .timer-wrap{display:none;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
     .timer-wrap.show{display:flex}
-    .timer-row{display:flex;align-items:center;gap:8px}
-    .t-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-    .t-btn:active{background:var(--accent);border-color:var(--accent)}
-    .t-num{font-size:34px;font-weight:800;width:70px;text-align:center;background:none;border:none;color:var(--text);font-family:'Vazirmatn',sans-serif;-moz-appearance:textfield;appearance:textfield;outline:none}
+    .timer-row{display:flex;align-items:center;gap:6px}
+    .t-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+    .t-btn:active{background:var(--accent)}
+    .t-num{font-size:30px;font-weight:800;width:60px;text-align:center;background:none;border:none;color:var(--text);font-family:'Vazirmatn',sans-serif;-moz-appearance:textfield;appearance:textfield;outline:none}
     .t-num::-webkit-outer-spin-button,.t-num::-webkit-inner-spin-button{-webkit-appearance:none}
-    .t-label{font-size:10px;color:var(--muted)}
-    .t-preview{font-size:10px;color:var(--green);min-height:14px;text-align:center}
-    .quick-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
-    .qbtn{padding:4px 8px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:10px;cursor:pointer;transition:all .12s}
-    .qbtn:active{background:var(--card2);border-color:var(--accent2);color:var(--accent2)}
+    .t-preview{font-size:9px;color:var(--green)}
+    .quick-row{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+    .qbtn{padding:3px 6px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:9px;cursor:pointer}
+    .qbtn:active{border-color:var(--accent2);color:var(--accent2)}
 
-    /* Label + sound */
-    .inp{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:12px;width:100%;padding:7px 10px;border-radius:9px;outline:none;transition:border-color .2s}
+    /* INPUTS */
+    .inp{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:11px;width:100%;padding:5px 8px;border-radius:8px;outline:none;transition:border-color .2s;flex-shrink:0}
     .inp::placeholder{color:var(--muted)}.inp:focus{border-color:var(--accent)}
-    .snd-row{display:flex;align-items:center;gap:5px}
-    .snd-label{font-size:11px;color:var(--muted);flex-shrink:0}
-    .snd-sel{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:11px;flex:1;padding:6px 8px;border-radius:8px;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none}
-    .up-btn{background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:6px 8px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
+    .snd-row{display:flex;align-items:center;gap:4px;flex-shrink:0}
+    .snd-label{font-size:10px;color:var(--muted);flex-shrink:0}
+    .snd-sel{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:10px;flex:1;padding:5px 6px;border-radius:7px;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;min-width:0}
+    .up-btn{background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:5px 7px;border-radius:7px;cursor:pointer;font-size:12px;flex-shrink:0}
 
-    /* Days */
-    .days-row{display:flex;gap:3px}
-    .dbtn{flex:1;padding:5px 2px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:10px;cursor:pointer;transition:all .12s;text-align:center}
+    /* DAYS */
+    #everyDayBtn{width:100%;padding:5px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0}
+    .days-row{display:flex;gap:2px;flex-shrink:0}
+    .dbtn{flex:1;padding:4px 1px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:9px;cursor:pointer;transition:all .12s;text-align:center}
     .dbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-    #everyDayBtn{width:100%;padding:6px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
 
-    /* Add button */
-    .add-btn{width:100%;padding:10px;background:linear-gradient(135deg,var(--accent),#b02030);border:none;border-radius:10px;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px var(--glow);transition:transform .12s}
+    /* ADD BTN */
+    .add-btn{width:100%;padding:8px;background:linear-gradient(135deg,var(--accent),#b02030);border:none;border-radius:9px;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 14px var(--glow);transition:transform .12s;flex-shrink:0}
     .add-btn:active{transform:scale(.97)}
 
-    /* ─── RIGHT PANEL: Alarm list ─── */
-    .panel-list{
-      display:flex;flex-direction:column;
-      overflow-y:auto;
-      scrollbar-width:none;
-      padding:8px 10px;
-      gap:6px;
-    }
-    .panel-list::-webkit-scrollbar{display:none}
-
-    .ai{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 11px;display:flex;align-items:center;gap:8px;transition:border-color .2s,opacity .3s;flex-shrink:0}
-    .ai.ring{border-color:var(--accent);box-shadow:0 0 14px var(--glow)}
-    .ai.off{opacity:.35}
+    /* ALARM LIST */
+    #aList{display:flex;flex-direction:column;gap:5px}
+    .ai{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 9px;display:flex;align-items:center;gap:7px;transition:border-color .2s,opacity .3s;flex-shrink:0}
+    .ai.ring{border-color:var(--accent);box-shadow:0 0 12px var(--glow)}
+    .ai.off{opacity:.32}
     .ai-left{flex:1;min-width:0}
-    .ai-time{font-size:22px;font-weight:800;letter-spacing:-0.5px;line-height:1}
-    .ai-lbl{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ai-days{font-size:9px;color:var(--accent2);margin-top:1px}
-    .ai-cd{font-size:9px;color:var(--green);margin-top:1px}
-    .ai-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-    .tog{position:relative;width:36px;height:20px}
+    .ai-time{font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1}
+    .ai-lbl{font-size:9px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ai-meta{font-size:8px;color:var(--accent2);margin-top:1px}
+    .ai-cd{color:var(--green)}
+    .ai-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+    .tog{position:relative;width:32px;height:18px}
     .tog input{opacity:0;width:0;height:0}
     .tog-s{position:absolute;inset:0;background:var(--border);border-radius:30px;cursor:pointer;transition:background .2s}
-    .tog-s::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+    .tog-s::before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
     .tog input:checked+.tog-s{background:var(--accent)}
-    .tog input:checked+.tog-s::before{transform:translateX(16px)}
-    .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px;transition:color .15s}
+    .tog input:checked+.tog-s::before{transform:translateX(14px)}
+    .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:2px;transition:color .12s}
     .del-btn:active{color:var(--accent)}
+    .empty{text-align:center;padding:20px 8px;color:var(--muted)}
+    .empty .ei{font-size:28px;margin-bottom:5px}
+    .empty p{font-size:10px;line-height:1.6}
 
-    .empty{text-align:center;padding:24px 10px;color:var(--muted)}
-    .empty .ei{font-size:32px;margin-bottom:6px}
-    .empty p{font-size:11px;line-height:1.7}
-
-    /* ─── RING OVERLAY ─── */
-    .ring-ov{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.95);flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+    /* RING OVERLAY */
+    .ring-ov{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.96);flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
     .ring-ov.show{display:flex}
-    .ring-icon{font-size:60px;animation:rshake .45s infinite alternate}
+    .ring-icon{font-size:56px;animation:rshake .45s infinite alternate}
     @keyframes rshake{from{transform:rotate(-14deg) scale(1)}to{transform:rotate(14deg) scale(1.1)}}
-    .ring-t{font-size:52px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .ring-l{font-size:16px;color:var(--muted)}
-    .ring-stop{padding:13px 48px;background:var(--accent);border:none;border-radius:100px;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:700;cursor:pointer;animation:pbtn 1s infinite;box-shadow:0 6px 24px var(--glow)}
-    @keyframes pbtn{0%,100%{box-shadow:0 6px 24px var(--glow)}50%{box-shadow:0 6px 36px rgba(233,69,96,.65)}}
-    .ring-snz{padding:9px 26px;background:var(--card2);border:1px solid var(--border);border-radius:100px;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:12px;cursor:pointer}
+    .ring-t{font-size:50px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .ring-l{font-size:15px;color:var(--muted)}
+    .ring-stop{padding:12px 44px;background:var(--accent);border:none;border-radius:100px;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:700;cursor:pointer;animation:pbtn 1s infinite}
+    @keyframes pbtn{0%,100%{box-shadow:0 6px 22px var(--glow)}50%{box-shadow:0 6px 32px rgba(233,69,96,.6)}}
+    .ring-snz{padding:8px 24px;background:var(--card2);border:1px solid var(--border);border-radius:100px;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:11px;cursor:pointer}
 
     /* TOAST */
-    .toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:12px;padding:9px 18px;border-radius:100px;z-index:200;transition:transform .25s ease;white-space:nowrap}
+    .toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:11px;padding:8px 16px;border-radius:100px;z-index:200;transition:transform .25s;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
     #fileInput{display:none}
   </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <img class="splash-logo" src="logo.png" alt="ئاگادارکەر" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏰</text></svg>'"/>
+  <div class="splash-name">ئاگادارکەر</div>
+  <div class="splash-sub">بەرنامەی کاتبەندی</div>
+</div>
+
 <div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 
 <!-- RING OVERLAY -->
@@ -182,57 +166,43 @@
 <input type="file" id="fileInput" accept="audio/*" onchange="onAudioUpload(event)"/>
 
 <div class="app">
-  <!-- HEADER -->
   <div class="hdr">
     <div class="logo-area">
-      <img class="logo-img" src="logo.png" alt="logo" onerror="this.style.display='none'"/>
+      <img class="logo-sm" src="logo.png" alt="" onerror="this.style.display='none'"/>
       <span class="logo-text">ئاگادارکەر</span>
     </div>
     <div class="clock-area">
-      <div class="live-clock" id="clk">00:00:00</div>
+      <div class="live-clock" id="clk">00:00</div>
       <div class="live-date" id="dtl">—</div>
     </div>
   </div>
 
-  <!-- BODY -->
   <div class="body">
-
-    <!-- LEFT: Add Alarm -->
-    <div class="panel-add">
-      <div class="panel-title">▸ ئاگادارکەری نوێ</div>
+    <!-- LEFT: Add -->
+    <div class="panel panel-add">
+      <div class="ptitle">▸ ئاگادارکەری نوێ</div>
 
       <div class="mode-tabs">
         <button class="mtab on" id="tabClock" onclick="setMode('clock')">⏰ کاتژمێر</button>
         <button class="mtab" id="tabTimer" onclick="setMode('timer')">⏱ خولەک</button>
       </div>
 
-      <!-- Clock picker -->
       <div class="tp-row" id="clockPicker">
-        <div class="tp-col">
-          <span>کاتژمێر</span>
-          <div class="drum" id="drumH">
-            <div class="drum-inner" id="drumHInner"></div>
-            <div class="drum-line t"></div><div class="drum-line b"></div>
-          </div>
+        <div class="tp-col"><span>کاتژمێر</span>
+          <div class="drum" id="drumH"><div class="drum-inner" id="drumHInner"></div><div class="drum-line t"></div><div class="drum-line b"></div></div>
         </div>
         <div class="tp-sep">:</div>
-        <div class="tp-col">
-          <span>خولەک</span>
-          <div class="drum" id="drumM">
-            <div class="drum-inner" id="drumMInner"></div>
-            <div class="drum-line t"></div><div class="drum-line b"></div>
-          </div>
+        <div class="tp-col"><span>خولەک</span>
+          <div class="drum" id="drumM"><div class="drum-inner" id="drumMInner"></div><div class="drum-line t"></div><div class="drum-line b"></div></div>
         </div>
       </div>
 
-      <!-- Timer picker -->
       <div class="timer-wrap" id="timerPicker">
         <div class="timer-row">
           <button class="t-btn" onclick="adjMin(-5)">－</button>
           <input class="t-num" id="tNum" type="number" min="1" max="1440" value="10" oninput="updatePreview()"/>
           <button class="t-btn" onclick="adjMin(5)">＋</button>
         </div>
-        <div class="t-label">خولەک دیکە ئاگادارم بکە</div>
         <div class="quick-row">
           <button class="qbtn" onclick="setMin(5)">٥خ</button>
           <button class="qbtn" onclick="setMin(10)">١٠خ</button>
@@ -248,11 +218,11 @@
       <div class="snd-row">
         <span class="snd-label">🔊</span>
         <select class="snd-sel" id="sndSel">
-          <option value="beep">Beep کلاسیک</option>
+          <option value="beep">Beep</option>
           <option value="gentle">هێمن</option>
           <option value="urgent">بەپەل</option>
           <option value="digital">دیجیتاڵ</option>
-          <option value="custom" id="custOpt" style="display:none">🎵 دەنگی خۆت</option>
+          <option value="custom" id="custOpt" style="display:none">🎵 خۆت</option>
         </select>
         <button class="up-btn" onclick="document.getElementById('fileInput').click()">📁</button>
       </div>
@@ -267,40 +237,45 @@
         <button class="dbtn" data-d="5">ه‍</button>
         <button class="dbtn" data-d="6">ش</button>
       </div>
-
       <button class="add-btn" onclick="addAlarm()">＋ زیادکردن</button>
     </div>
 
-    <!-- RIGHT: Alarm list -->
-    <div class="panel-list">
-      <div class="panel-title">▸ ئاگادارکەرەکان</div>
+    <!-- RIGHT: List -->
+    <div class="panel panel-list">
+      <div class="ptitle">▸ ئاگادارکەرەکان</div>
       <div id="aList"></div>
     </div>
-
-  </div><!-- /body -->
-</div><!-- /app -->
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// SPLASH
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const s=document.getElementById('splash');
+    s.classList.add('fade');
+    setTimeout(()=>s.remove(),700);
+  },1800);
+});
+
 let alarms=JSON.parse(localStorage.getItem('ku_alarms')||'[]');
 let mode='clock',selH=new Date().getHours(),selM=0;
 let custBuf=null,ringingAlarm=null,ringIv=null,aCtx=null,oscs=[];
 const pad=n=>String(n).padStart(2,'0');
-function ac(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx}
+function ac(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}
 
-// CLOCK
 function tick(){
   const n=new Date();
-  document.getElementById('clk').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  document.getElementById('clk').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}`;
   const D=['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'];
   const Mo=['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەمموز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
   document.getElementById('dtl').textContent=`${D[n.getDay()]} ${n.getDate()} ${Mo[n.getMonth()]}`;
 }
 setInterval(tick,1000);tick();
 
-// DRUM — compact (IH=30)
-const IH=30;
+const IH=26;
 function buildDrum(id,count){
   const el=document.getElementById(id);el.innerHTML='';
   for(let i=0;i<count;i++){const d=document.createElement('div');d.className='drum-item';d.textContent=pad(i);el.appendChild(d);}
@@ -308,7 +283,7 @@ function buildDrum(id,count){
 function renderDrum(id,val){
   const el=document.getElementById(id);
   el.querySelectorAll('.drum-item').forEach((it,i)=>it.classList.toggle('sel',i===val));
-  el.style.transform=`translateY(${-(val*IH)+(90/2-IH/2)}px)`;
+  el.style.transform=`translateY(${-(val*IH)+(78/2-IH/2)}px)`;
   el.style.transition='transform .15s ease';
 }
 function initDrum(drumId,innerId,count,getV,setV){
@@ -328,7 +303,6 @@ function initDrum(drumId,innerId,count,getV,setV){
 initDrum('drumH','drumHInner',24,()=>selH,v=>selH=v);
 initDrum('drumM','drumMInner',60,()=>selM,v=>selM=v);
 
-// MODE
 function setMode(m){
   mode=m;
   document.getElementById('tabClock').classList.toggle('on',m==='clock');
@@ -337,8 +311,6 @@ function setMode(m){
   document.getElementById('timerPicker').classList.toggle('show',m==='timer');
   if(m==='timer')updatePreview();
 }
-
-// TIMER
 function adjMin(d){const inp=document.getElementById('tNum');let v=(parseInt(inp.value)||0)+d;if(v<1)v=1;if(v>1440)v=1440;inp.value=v;updatePreview();}
 function setMin(v){document.getElementById('tNum').value=v;updatePreview();}
 function updatePreview(){
@@ -347,19 +319,15 @@ function updatePreview(){
   const t=new Date(Date.now()+m*60000);
   document.getElementById('tPreview').textContent=`→ ${pad(t.getHours())}:${pad(t.getMinutes())}`;
 }
-setInterval(()=>{if(mode==='timer')updatePreview();},15000);
 
-// DAYS
 document.querySelectorAll('.dbtn').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('on');syncEveryDayBtn();}));
 function toggleEveryDay(){const allOn=document.querySelectorAll('.dbtn.on').length===7;document.querySelectorAll('.dbtn').forEach(b=>b.classList.toggle('on',!allOn));syncEveryDayBtn();}
 function syncEveryDayBtn(){
-  const allOn=document.querySelectorAll('.dbtn.on').length===7;
-  const btn=document.getElementById('everyDayBtn');
+  const allOn=document.querySelectorAll('.dbtn.on').length===7,btn=document.getElementById('everyDayBtn');
   if(allOn){btn.style.background='var(--green)';btn.style.borderColor='var(--green)';btn.style.color='#000';btn.style.fontWeight='700';}
   else{btn.style.background='transparent';btn.style.borderColor='var(--border)';btn.style.color='var(--muted)';btn.style.fontWeight='600';}
 }
 
-// AUDIO UPLOAD
 async function onAudioUpload(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
@@ -372,7 +340,6 @@ async function onAudioUpload(e){
   };r.readAsArrayBuffer(f);
 }
 
-// SOUND
 function playSound(type){
   stopSound();const ctx=ac();if(ctx.state==='suspended')ctx.resume();
   if(type==='custom'&&custBuf){const s=ctx.createBufferSource();s.buffer=custBuf;s.loop=true;s.connect(ctx.destination);s.start();oscs=[s];return;}
@@ -390,12 +357,11 @@ function beepPat(ctx,freqs,gap){
 }
 function stopSound(){oscs.forEach(o=>{try{o.stop();}catch(e){}});oscs=[];}
 
-// ADD
 function addAlarm(){
   let h,m;
   if(mode==='clock'){h=selH;m=selM;}
   else{const mins=parseInt(document.getElementById('tNum').value);if(!mins||mins<1){toast('⚠️ ژمارەیەکی دروست بنووسە');return;}const t=new Date(Date.now()+mins*60000);h=t.getHours();m=t.getMinutes();}
-  const label=document.getElementById('lblInp').value.trim()||(mode==='timer'?`دوای ${document.getElementById('tNum').value} خولەک`:'ئاگادارکەر');
+  const label=document.getElementById('lblInp').value.trim()||(mode==='timer'?`دوای ${document.getElementById('tNum').value}خ`:'ئاگادارکەر');
   const sound=document.getElementById('sndSel').value;
   const days=[...document.querySelectorAll('.dbtn.on')].map(b=>parseInt(b.dataset.d));
   alarms.push({id:Date.now(),hour:h,min:m,label,sound,days,enabled:true});
@@ -407,14 +373,13 @@ function addAlarm(){
   if(mode==='timer')document.getElementById('tNum').value=10;
 }
 
-// RENDER
 function render(){
   const el=document.getElementById('aList');
   if(!alarms.length){el.innerHTML='<div class="empty"><div class="ei">⏰</div><p>هێشتا هیچ ئاگادارکەرێکت<br/>دانەناوە</p></div>';return;}
   const DN=['ی','د','س','چ','پ','ه‍','ش'];
   el.innerHTML=alarms.map(a=>{
-    const ts=`${pad(a.hour)}:${pad(a.min)}`,ds=a.days.length===7?'🔁 هەموو ڕۆژ':a.days.length?a.days.map(d=>DN[d]).join(' '):'یەک جار',cd=countdown(a);
-    return`<div class="ai ${a.enabled?'':'off'}"><div class="ai-left"><div class="ai-time">${ts}</div><div class="ai-lbl">${a.label}</div><div class="ai-days">${ds}</div>${a.enabled?`<div class="ai-cd">${cd}</div>`:''}</div><div class="ai-right"><label class="tog"><input type="checkbox" ${a.enabled?'checked':''} onchange="togAlarm(${a.id})"><span class="tog-s"></span></label><button class="del-btn" onclick="delAlarm(${a.id})">🗑</button></div></div>`;
+    const ts=`${pad(a.hour)}:${pad(a.min)}`,ds=a.days.length===7?'🔁':a.days.length?a.days.map(d=>DN[d]).join(''):'١×',cd=countdown(a);
+    return`<div class="ai ${a.enabled?'':'off'}"><div class="ai-left"><div class="ai-time">${ts}</div><div class="ai-lbl">${a.label}</div><div class="ai-meta">${ds}${a.enabled&&cd?` · <span class="ai-cd">${cd}</span>`:''}</div></div><div class="ai-right"><label class="tog"><input type="checkbox" ${a.enabled?'checked':''} onchange="togAlarm(${a.id})"><span class="tog-s"></span></label><button class="del-btn" onclick="delAlarm(${a.id})">🗑</button></div></div>`;
   }).join('');
 }
 function countdown(a){
@@ -423,12 +388,11 @@ function countdown(a){
   if(nx<=n)nx.setDate(nx.getDate()+1);
   if(a.days.length){for(let i=0;i<8;i++){const d=new Date(n);d.setDate(d.getDate()+i);d.setHours(a.hour,a.min,0,0);if(d>n&&a.days.includes(d.getDay())){nx=d;break;}}}
   const diff=Math.round((nx-n)/60000);
-  if(diff<60)return`⏳ ${diff}خ دیکە`;return`⏳ ${Math.floor(diff/60)}کژ ${diff%60}خ`;
+  if(diff<60)return`${diff}خ`;return`${Math.floor(diff/60)}کژ`;
 }
 function togAlarm(id){const a=alarms.find(x=>x.id===id);if(a){a.enabled=!a.enabled;save();render();}}
 function delAlarm(id){alarms=alarms.filter(x=>x.id!==id);save();render();toast('🗑 سڕایەوە');}
 
-// RING
 function ringAlarm(a){
   ringingAlarm=a;
   document.getElementById('rTime').textContent=`${pad(a.hour)}:${pad(a.min)}`;
@@ -437,7 +401,7 @@ function ringAlarm(a){
   playSound(a.sound);
   if(navigator.vibrate)ringIv=setInterval(()=>navigator.vibrate([500,200,500]),1200);
   if(window.Capacitor&&Capacitor.isPluginAvailable('LocalNotifications')){
-    Capacitor.Plugins.LocalNotifications.schedule({notifications:[{title:'⏰ '+a.label,body:`کاتی ${pad(a.hour)}:${pad(a.min)} گەیشتە`,id:a.id,schedule:{at:new Date()},sound:null,smallIcon:'ic_stat_icon_config_sample'}]});
+    Capacitor.Plugins.LocalNotifications.schedule({notifications:[{title:'⏰ '+a.label,body:`${pad(a.hour)}:${pad(a.min)} گەیشتە`,id:a.id,schedule:{at:new Date()},sound:null,smallIcon:'ic_stat_icon_config_sample'}]});
   }
 }
 function stopAlarm(){
@@ -449,11 +413,9 @@ function stopAlarm(){
 function snoozeAlarm(){
   stopSound();clearInterval(ringIv);if(navigator.vibrate)navigator.vibrate(0);
   document.getElementById('ringOv').classList.remove('show');
-  if(ringingAlarm){const nx=new Date(Date.now()+5*60000);alarms.push({...ringingAlarm,id:Date.now(),hour:nx.getHours(),min:nx.getMinutes(),label:'😴 '+ringingAlarm.label,days:[]});save();render();toast('😴 ٥ خولەک دیکە ئاگادار دەکریتەوە');}
+  if(ringingAlarm){const nx=new Date(Date.now()+5*60000);alarms.push({...ringingAlarm,id:Date.now(),hour:nx.getHours(),min:nx.getMinutes(),label:'😴 '+ringingAlarm.label,days:[]});save();render();toast('😴 ٥ خولەک دیکە');}
   ringingAlarm=null;
 }
-
-// CHECK
 function checkAlarms(){
   if(ringingAlarm)return;
   const n=new Date(),H=n.getHours(),M=n.getMinutes(),S=n.getSeconds();
